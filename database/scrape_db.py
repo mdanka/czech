@@ -4,6 +4,7 @@ from lxml import html
 import requests
 import sys
 import urllib3
+import json
 
 urllib3.disable_warnings()
 
@@ -12,6 +13,8 @@ WIKTIONARY_WORD_LIST_BASE_URL = u"https://cs.wiktionary.org/w/index.php?title=Ka
 WIKTIONARY_WORD_BASE_URL = u"https://cs.wiktionary.org/wiki/"
 WIKTIONARY_WORD_LIST_LETTERS = [u"A", u"B", u"C", u"Č", u"D", u"E", u"F", u"G", u"H", u"Ch", u"I", u"J", u"K", u"L", u"M", u"N", u"O", u"P", u"Q", u"R", u"Ř", u"S", u"Š", u"T", u"U", u"V", u"W", u"X", u"Y", u"Z", u"Ž"]
 CASE_NAMES = [u"nominativ", u"genitiv", u"dativ", u"akuzativ", u"vokativ", u"lokál", u"instrumentál"]
+ERROR_NO_GENDER = []
+ERROR_NO_7_CASES = []
 
 def getPage(fullUrl):
     try:
@@ -35,7 +38,7 @@ def getWordsForLetter(letter):
 def getAllWords():
     wordsListList = map(getWordsForLetter, WIKTIONARY_WORD_LIST_LETTERS)
     wordsList = [item for sublist in wordsListList for item in sublist]
-    return wordsList
+    return list(set(wordsList))
 
 def genderStringToGender(genderString):
     if genderString == None:
@@ -77,10 +80,12 @@ def getWordInformation(word):
     genderString = None if len(genderList) == 0 else genderList[0]
     if genderString == None:
         print(u"!!! No GENDER information for: " + word)
+        ERROR_NO_GENDER.append(word)
         return None
     cases = map(lambda caseName: tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()'), CASE_NAMES)
     if len(cases) < 7:
         print(u"!!! No 7 CASES for: " + word)
+        ERROR_NO_7_CASES.append(word)
         return None
     print("Done with word " + word)
     return {
@@ -97,13 +102,25 @@ def getWordInformation(word):
 
 def getAllWordInformation():
     allWords = getAllWords()
-    wordMap = {word:getWordInformation(word) for word in (allWords[0:10])}
+    wordMap = {word:getWordInformation(word) for word in (allWords[1:10])}
     return wordMap
 
 def main():
-    print(getAllWordInformation())
-    # print(getWordInformation("abakus"))
-    # print(getWordInformation("Aachen"))
+    allWordInformation = getAllWordInformation()
+    allWordInformationJson = json.dumps(allWordInformation)
+    print("### Persisting to files...")
+    # Persist words
+    wordsFile = open(r"words.json", "w+")
+    wordsFile.write(allWordInformationJson)
+    wordsFile.close()
+    # Persist issues
+    errorsNoGenderFile = open(r"errors_no_gender.txt", "w+")
+    errorsNoGenderFile.write(", ".join(ERROR_NO_GENDER))
+    errorsNoGenderFile.close()
+    errorsNo7CasesFile = open(r"errors_no_7_cases.txt", "w+")
+    errorsNo7CasesFile.write(", ".join(ERROR_NO_7_CASES))
+    errorsNo7CasesFile.close()
+    print("Done.")
 
 if __name__ == "__main__":
     main()
