@@ -45,6 +45,8 @@ const DATABASE = DATABASE_JSON as IWordDatabase;
 
 interface IAppState {
     currentWord: ICurrentWord | undefined;
+    currentGuess: string;
+    isRevealed: boolean;
     /**
      * 1-7 refers to each of the singular cases.
      * 8-14 refers to each of the plural cases.
@@ -64,6 +66,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         super(props);
         this.state = {
             currentWord: undefined,
+            currentGuess: "",
+            isRevealed: false,
             selectedCases: new Set(SELECTABLE_CASE_NUMBERS.slice()),
         };
     }
@@ -113,7 +117,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private renderCurrentWord = () => {
-        const { currentWord } = this.state;
+        const { currentWord, currentGuess, isRevealed } = this.state;
         if (currentWord == null) {
             return null;
         }
@@ -126,7 +130,16 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     Word: {word} - {genderString}
                 </p>
                 <p className="md-running-text">Case: {ALL_CASE_NAMES[caseNumber]}</p>
-                <p className="md-running-text">Solution: {solution}</p>
+                <p className="md-running-text">
+                    <input type="text" value={currentGuess} disabled={isRevealed} onChange={this.handleCurrentGuessChange} />
+                    <button onClick={this.handleCheck} disabled={isRevealed}>
+                        Check answer
+                    </button>
+                </p>
+                {isRevealed && (
+                    <p className="md-running-text">{currentGuess === solution ? "Correct!" : "Incorrect"}</p>
+                )}
+                {isRevealed && <p className="md-running-text">Solution: {solution}</p>}
             </div>
         );
     };
@@ -153,10 +166,10 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     //     return `https://github.com/mdanka/czech/issues/new?labels=bug&title=${issueTitleEncoded}&body=${issueBodyEncoded}`;
     // };
 
-    // private handleInputChange = (event: React.ChangeEvent<any>) => {
-    //     const chordText = event.target.value;
-    //     this.handleChordChange(chordText);
-    // };
+    private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
+        const currentGuess = event.target.value;
+        this.setState({ currentGuess });
+    };
 
     private getCaseClickHandler = (caseNumber: number) => () => {
         const { selectedCases } = this.state;
@@ -184,7 +197,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             word = this.getRandomWord();
             numTries++;
         }
-        this.setState({ currentWord: word });
+        this.setState({ currentWord: word, currentGuess: "", isRevealed: false });
+    };
+
+    private handleCheck = () => {
+        this.setState({ isRevealed: true });
     };
 
     private getRandomWord = (): ICurrentWord | undefined => {
