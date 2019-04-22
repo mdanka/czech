@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "jsx": "react",
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noEmitHelpers": false,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "build/tmp",
+        "removeComments": true,
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "skipLibCheck": true,
+        "target": "ES2015"
+    },
+    "exclude": [
+        "build",
+        "node_modules",
+        "test"
+    ]
+}
