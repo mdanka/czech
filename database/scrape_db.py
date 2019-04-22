@@ -13,16 +13,14 @@ WIKTIONARY_WORD_LIST_BASE_URL = u"https://cs.wiktionary.org/w/index.php?title=Ka
 WIKTIONARY_WORD_BASE_URL = u"https://cs.wiktionary.org/wiki/"
 WIKTIONARY_WORD_LIST_LETTERS = [u"A", u"B", u"C", u"Č", u"D", u"E", u"F", u"G", u"H", u"Ch", u"I", u"J", u"K", u"L", u"M", u"N", u"O", u"P", u"Q", u"R", u"Ř", u"S", u"Š", u"T", u"U", u"V", u"W", u"X", u"Y", u"Z", u"Ž"]
 CASE_NAMES = [u"nominativ", u"genitiv", u"dativ", u"akuzativ", u"vokativ", u"lokál", u"instrumentál"]
-ERROR_NO_GENDER = []
-ERROR_NO_7_CASES = []
+ERROR_NO_GENDER = list()
+ERROR_NO_7_CASES = list()
 
 def getPage(fullUrl):
     try:
         r = requests.get(fullUrl, verify=False)
         return r.content
-    # except requests.ConnectionError as e:
-    #     return e.reason
-    except requests.exceptions.RequestException as e:  # This is the correct syntax
+    except requests.exceptions.RequestException as e:
         print(e)
         sys.exit(1)
 
@@ -36,7 +34,7 @@ def getWordsForLetter(letter):
     return words
 
 def getAllWords():
-    wordsListList = map(getWordsForLetter, WIKTIONARY_WORD_LIST_LETTERS)
+    wordsListList = list(map(getWordsForLetter, WIKTIONARY_WORD_LIST_LETTERS))
     wordsList = [item for sublist in wordsListList for item in sublist]
     return list(set(wordsList))
 
@@ -82,7 +80,8 @@ def getWordInformation(word):
         print(u"!!! No GENDER information for: " + word)
         ERROR_NO_GENDER.append(word)
         return None
-    cases = map(lambda caseName: tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()'), CASE_NAMES)
+    cases = list(map(lambda caseName: tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()'), CASE_NAMES))
+    print(cases)
     if len(cases) < 7:
         print(u"!!! No 7 CASES for: " + word)
         ERROR_NO_7_CASES.append(word)
@@ -102,24 +101,23 @@ def getWordInformation(word):
 
 def getAllWordInformation():
     allWords = getAllWords()
-    wordMap = {word:getWordInformation(word) for word in (allWords[1:10])}
+    wordMap = {word:getWordInformation(word) for word in allWords}
     return wordMap
+
+def writeStringToFile(filename, string):
+    myFile = open(filename, "w", encoding='utf-8')
+    myFile.write(string)
+    myFile.close()
 
 def main():
     allWordInformation = getAllWordInformation()
     allWordInformationJson = json.dumps(allWordInformation)
     print("### Persisting to files...")
     # Persist words
-    wordsFile = open(r"words.json", "w+")
-    wordsFile.write(allWordInformationJson)
-    wordsFile.close()
+    writeStringToFile(r"words.json", allWordInformationJson)
     # Persist issues
-    errorsNoGenderFile = open(r"errors_no_gender.txt", "w+")
-    errorsNoGenderFile.write(", ".join(ERROR_NO_GENDER))
-    errorsNoGenderFile.close()
-    errorsNo7CasesFile = open(r"errors_no_7_cases.txt", "w+")
-    errorsNo7CasesFile.write(", ".join(ERROR_NO_7_CASES))
-    errorsNo7CasesFile.close()
+    writeStringToFile(r"errors_no_gender.txt", "\n".join(ERROR_NO_GENDER))
+    writeStringToFile(r"errors_no_7_cases.txt", "\n".join(ERROR_NO_7_CASES))
     print("Done.")
 
 if __name__ == "__main__":
