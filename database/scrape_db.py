@@ -83,7 +83,6 @@ def getWordInformation(word):
         ERROR_NO_GENDER.append(word)
         return None
     cases = list(map(lambda caseName: tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()'), CASE_NAMES))
-    print(cases)
     if len(cases) < 7:
         print(u"!!! No 7 CASES for: " + word)
         ERROR_NO_7_CASES.append(word)
