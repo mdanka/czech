@@ -36,7 +36,7 @@ def getWordsForLetter(letter):
 def getAllWords():
     wordsListList = list(map(getWordsForLetter, WIKTIONARY_WORD_LIST_LETTERS))
     wordsList = [item for sublist in wordsListList for item in sublist]
-    return list(set(wordsList))
+    return list(set(wordsList)).sort()
 
 def genderStringToGender(genderString):
     if genderString == None:
