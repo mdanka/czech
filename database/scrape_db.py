@@ -71,6 +71,12 @@ def getCase(case):
         'plural': getCaseValue(case[1]) if len(case) >= 2 else None
     }
 
+def getCaseFromTree(tree, caseName):
+    matches = tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()')
+    if len(matches) < 2:
+        return None
+    return matches
+
 def getWordInformation(word):
     print("### Getting word: " + word)
     fullUrl = WIKTIONARY_WORD_BASE_URL + word
@@ -82,8 +88,9 @@ def getWordInformation(word):
         print(u"!!! No GENDER information for: " + word)
         ERROR_NO_GENDER.append(word)
         return None
-    cases = list(map(lambda caseName: tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()'), CASE_NAMES))
-    if len(cases) < 7:
+    cases = list(map(lambda caseName: getCaseFromTree(tree, caseName), CASE_NAMES))
+    casesFiltered = list(filter(lambda x: x != None, cases))
+    if len(casesFiltered) < 7:
         print(u"!!! No 7 CASES for: " + word)
         ERROR_NO_7_CASES.append(word)
         return None
@@ -91,13 +98,13 @@ def getWordInformation(word):
     return {
         'gender': genderStringToGender(genderString),
         'isAnimated': genderStringToAnimated(genderString),
-        'nominative': getCase(cases[0]),
-        'genitive': getCase(cases[1]),
-        'dative': getCase(cases[2]),
-        'accusative': getCase(cases[3]),
-        'vocative': getCase(cases[4]),
-        'locative': getCase(cases[5]),
-        'instrumental': getCase(cases[6]),
+        'nominative': getCase(casesFiltered[0]),
+        'genitive': getCase(casesFiltered[1]),
+        'dative': getCase(casesFiltered[2]),
+        'accusative': getCase(casesFiltered[3]),
+        'vocative': getCase(casesFiltered[4]),
+        'locative': getCase(casesFiltered[5]),
+        'instrumental': getCase(casesFiltered[6]),
     }
 
 def getAllWordInformation():
