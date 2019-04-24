@@ -131,7 +131,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 </p>
                 <p className="md-running-text">Case: {ALL_CASE_NAMES[caseNumber]}</p>
                 <p className="md-running-text">
-                    <input type="text" value={currentGuess} disabled={isRevealed} onChange={this.handleCurrentGuessChange} />
+                    <input
+                        type="text"
+                        value={currentGuess}
+                        disabled={isRevealed}
+                        onChange={this.handleCurrentGuessChange}
+                    />
                     <button onClick={this.handleCheck} disabled={isRevealed}>
                         Check answer
                     </button>
