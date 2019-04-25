@@ -38,12 +38,39 @@ const ALL_CASE_NAMES = [
     "Locative (6.) - plural",
     "Instrumental (7.) - plural",
 ];
-// const SELECTABLE_CASE_NUMBERS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 const SELECTABLE_CASE_NUMBERS = [8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14];
+
+const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
 import * as DATABASE_JSON from "../../database/words.json";
 const DATABASE = DATABASE_JSON as IWordDatabase;
 const NUMBER_OF_WORDS = Object.keys(DATABASE).length;
+const NUMBER_OF_DECLENSIONS = Object.keys(DATABASE)
+    .map(word => {
+        const wordInfo = DATABASE[word];
+        if (wordInfo == null) {
+            return 0;
+        }
+        const { nominative, genitive, dative, accusative, vocative, locative, instrumental } = wordInfo;
+        return [nominative, genitive, dative, accusative, vocative, locative, instrumental]
+            .map(
+                (wordCase): number => {
+                    if (wordCase == null) {
+                        return 0;
+                    }
+                    const { singular, plural } = wordCase;
+                    if (singular == null && plural == null) {
+                        return 0;
+                    }
+                    if (singular != null && plural != null) {
+                        return 2;
+                    }
+                    return 1;
+                },
+            )
+            .reduce(SUM_REDUCER, 0);
+    })
+    .reduce(SUM_REDUCER, 0);
 
 interface IAppState {
     currentWord: ICurrentWord | undefined;
@@ -83,7 +110,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             <div className="app">
                 <h1>Czech Practice</h1>
                 <p className="md-running-text">
-                    <span className="md-strong">{NUMBER_OF_WORDS} words</span> available.
+                    <span className="md-strong">{NUMBER_OF_WORDS} words</span> with{" "}
+                    <span className="md-strong">{NUMBER_OF_DECLENSIONS} declensions</span> available.
                 </p>
                 {this.renderCreateGeneralIssueLink()}
                 <p>
