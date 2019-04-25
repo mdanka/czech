@@ -86,7 +86,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     </a>
                     .
                 </p>
-                <p className="md-running-text">Select which cases you'd like to practice.</p>
+                <h3>Choose cases to practise</h3>
                 <p className="md-running-text md-button-group">
                     <button className="md-button" onClick={this.handleSelectAllClick}>
                         Select all
@@ -96,6 +96,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     </button>
                 </p>
                 <p className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</p>
+                <h3>Practise</h3>
                 <p className="md-running-text">
                     <button className="md-button" onClick={this.handleNewWordClick}>
                         New word
