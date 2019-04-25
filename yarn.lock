@@ -52,10 +52,10 @@
     humps "^2.0.1"
     prop-types "^15.5.10"
 
-"@mdanka/glass-ui@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@mdanka/glass-ui/-/glass-ui-0.3.0.tgz#fe3820b28e07bb41c6830fc6a1ff1ccf0354a801"
-  integrity sha512-4cvsdd8I/uv2QsBItEro831WLAyl8Rny+39iXs2f5p2PbcN2pJ8IReLoK+v6tHPSQ8W27vzOjnxGuDFFO1nn+Q==
+"@mdanka/glass-ui@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@mdanka/glass-ui/-/glass-ui-0.3.1.tgz#da9f57dad14bfe77aa9fa1e31f1f1d754d148b85"
+  integrity sha512-WoNXm8xF3O/LihQYhgTh/JtNBFCdX3J6H6qFJa24p8zjJUknYiS5FtaPW9ZxhXvUdp+6K6JqFDFGktm3DjxIkg==
 
 "@types/classnames@^0.0.32":
   version "0.0.32"
