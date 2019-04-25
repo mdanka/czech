@@ -135,7 +135,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const { word, solution, caseNumber, info } = currentWord;
         const { gender, isAnimated } = info;
         const genderString = this.generateGenderString(gender, isAnimated);
-        const isCorrect = currentGuess === solution;
+        const isCorrect = this.isGuessCorrect();
         const resultElement = isCorrect ? (
             <span className="md-strong md-intent-success">✓ Correct!</span>
         ) : (
@@ -197,6 +197,19 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     //     const issueBodyEncoded = encodeURIComponent(issueBody);
     //     return `https://github.com/mdanka/czech/issues/new?labels=bug&title=${issueTitleEncoded}&body=${issueBodyEncoded}`;
     // };
+
+    private isGuessCorrect = () => {
+        const { currentWord, currentGuess } = this.state;
+        if (currentWord == null) {
+            return false;
+        }
+        const { solution } = currentWord;
+        return this.normalizeString(currentGuess) === this.normalizeString(solution);
+    };
+
+    private normalizeString = (value: string) => {
+        return value.trim().toLowerCase();
+    };
 
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
         const currentGuess = event.target.value;
