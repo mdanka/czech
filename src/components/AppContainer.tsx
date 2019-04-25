@@ -87,13 +87,19 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     .
                 </p>
                 <p className="md-running-text">Select which cases you'd like to practice.</p>
-                <p className="md-running-text">
-                    <button onClick={this.handleSelectAllClick}>Select all</button>
-                    <button onClick={this.handleDeselectAllClick}>Deselect all</button>
+                <p className="md-running-text md-button-group">
+                    <button className="md-button" onClick={this.handleSelectAllClick}>
+                        Select all
+                    </button>
+                    <button className="md-button" onClick={this.handleDeselectAllClick}>
+                        Deselect all
+                    </button>
                 </p>
                 <p className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</p>
                 <p className="md-running-text">
-                    <button onClick={this.handleNewWordClick}>New word</button>
+                    <button className="md-button" onClick={this.handleNewWordClick}>
+                        New word
+                    </button>
                 </p>
                 {this.renderCurrentWord()}
             </div>
@@ -137,7 +143,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         disabled={isRevealed}
                         onChange={this.handleCurrentGuessChange}
                     />
-                    <button onClick={this.handleCheck} disabled={isRevealed}>
+                    <button className="md-button" onClick={this.handleCheck} disabled={isRevealed}>
                         Check answer
                     </button>
                 </p>
