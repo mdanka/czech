@@ -243,7 +243,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             word = this.getRandomWord();
             numTries++;
         }
-        this.setState({ currentWord: word, currentGuess: "", isRevealed: false });
+        const { word: initialGuess } = word === undefined ? { word: "" } : word;
+        this.setState({ currentWord: word, currentGuess: initialGuess, isRevealed: false });
     };
 
     private handleCheck = () => {
