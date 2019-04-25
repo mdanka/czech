@@ -43,6 +43,7 @@ const SELECTABLE_CASE_NUMBERS = [8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14];
 
 import * as DATABASE_JSON from "../../database/words.json";
 const DATABASE = DATABASE_JSON as IWordDatabase;
+const NUMBER_OF_WORDS = Object.keys(DATABASE).length;
 
 interface IAppState {
     currentWord: ICurrentWord | undefined;
@@ -78,12 +79,15 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     public render() {
         const { currentWord } = this.state;
         const isPlayInProgress = currentWord !== undefined;
-        const numberOfWords = Object.keys(DATABASE).length;
         return (
             <div className="app">
                 <h1>Czech Practice</h1>
                 <p className="md-running-text">
-                    <span className="md-strong">{numberOfWords} words available.</span> Source on{" "}
+                    <span className="md-strong">{NUMBER_OF_WORDS} words</span> available.
+                </p>
+                {this.renderCreateGeneralIssueLink()}
+                <p>
+                    App source on{" "}
                     <a href="https://github.com/mdanka/czech" target="_blank">
                         Github
                     </a>
@@ -168,12 +172,55 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         The correct answer was <span className="md-strong">{solution}</span>.
                     </p>
                 )}
+                {isRevealed && this.renderCreateWordIssueLink()}
                 <p className="md-running-text">
                     <button className="md-button" onClick={this.handleNewWordClick}>
                         Next word
                     </button>
                 </p>
             </div>
+        );
+    };
+
+    private renderCreateGeneralIssueLink = () => {
+        const question = "Do you have some feedback?";
+        const callToAction = "Click here to let us know.";
+        const issueTitle = `Feedback about <fill in here>`;
+        const issueBody = `<fill in here>`;
+        return this.renderCreateIssueLink(question, callToAction, issueTitle, issueBody, undefined);
+    };
+
+    private renderCreateWordIssueLink = () => {
+        const { currentWord } = this.state;
+        if (currentWord === undefined) {
+            return null;
+        }
+        const { word, info, solution, caseNumber } = currentWord;
+        const caseName = ALL_CASE_NAMES[caseNumber];
+        const { gender, isAnimated } = info;
+        const genderString = this.generateGenderString(gender, isAnimated);
+        const question = "Do you disagree with this answer?";
+        const callToAction = "Click here to report an incorrect declension.";
+        const issueTitle = `Wrong solution for "${word}"`;
+        const issueBody = `The word \`${word} (${genderString})\` in the case \`${caseName}\` is specified as \`${solution}\`, but I think it is incorrect because... <fill in why>`;
+        return this.renderCreateIssueLink(question, callToAction, issueTitle, issueBody, "bug");
+    };
+
+    private renderCreateIssueLink = (
+        question: string,
+        callToAction: string,
+        issueTitle: string,
+        issueBody: string,
+        label: string | undefined,
+    ) => {
+        const issueUrl = this.getCreateIssueUrl(issueTitle, issueBody, label);
+        return (
+            <p>
+                {question}{" "}
+                <a target="_blank" href={issueUrl}>
+                    {callToAction}
+                </a>
+            </p>
         );
     };
 
@@ -193,11 +240,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         return "Masculine - inanimate";
     };
 
-    // private getCreateIssueUrl = (issueTitle: string, issueBody: string) => {
-    //     const issueTitleEncoded = encodeURIComponent(issueTitle);
-    //     const issueBodyEncoded = encodeURIComponent(issueBody);
-    //     return `https://github.com/mdanka/czech/issues/new?labels=bug&title=${issueTitleEncoded}&body=${issueBodyEncoded}`;
-    // };
+    private getCreateIssueUrl = (issueTitle: string, issueBody: string, label: string | undefined) => {
+        const issueTitleEncoded = encodeURIComponent(issueTitle);
+        const issueBodyEncoded = encodeURIComponent(issueBody);
+        const labelParam = label === undefined ? "" : `labels=${label}&`;
+        return `https://github.com/mdanka/czech/issues/new?${labelParam}title=${issueTitleEncoded}&body=${issueBodyEncoded}`;
+    };
 
     private isGuessCorrect = () => {
         const { currentWord, currentGuess } = this.state;
@@ -307,6 +355,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             this.caseToString(instrumental, false),
         ];
     };
+
     private caseToString = (caseObject: ICase | null, isSingular: boolean) => {
         const caseStringOrNull = caseObject == null ? null : isSingular ? caseObject.singular : caseObject.plural;
         return caseStringOrNull == null ? "" : caseStringOrNull;
