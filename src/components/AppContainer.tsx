@@ -75,6 +75,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     public componentDidMount() {}
 
     public render() {
+        const { currentWord } = this.state;
+        const isPlayInProgress = currentWord !== undefined;
         const numberOfWords = Object.keys(DATABASE).length;
         return (
             <div className="app">
@@ -97,11 +99,13 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 </p>
                 <p className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</p>
                 <h3>Practise</h3>
-                <p className="md-running-text">
-                    <button className="md-button" onClick={this.handleNewWordClick}>
-                        New word
-                    </button>
-                </p>
+                {!isPlayInProgress && (
+                    <p className="md-running-text">
+                        <button className="md-button" onClick={this.handleNewWordClick}>
+                            Start
+                        </button>
+                    </p>
+                )}
                 {this.renderCurrentWord()}
             </div>
         );
@@ -131,14 +135,23 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const { word, solution, caseNumber, info } = currentWord;
         const { gender, isAnimated } = info;
         const genderString = this.generateGenderString(gender, isAnimated);
+        const isCorrect = currentGuess === solution;
+        const resultElement = isCorrect ? (
+            <span className="md-strong md-intent-success">✓ Correct!</span>
+        ) : (
+            <span className="md-strong md-intent-danger">✗ Incorrect</span>
+        );
         return (
             <div>
                 <p className="md-running-text">
-                    Word: {word} - {genderString}
+                    The word <span className="md-strong">{word}</span> ({genderString})
                 </p>
-                <p className="md-running-text">Case: {ALL_CASE_NAMES[caseNumber]}</p>
+                <p className="md-running-text">
+                    in the case <span className="md-strong">{ALL_CASE_NAMES[caseNumber]}</span> is:
+                </p>
                 <p className="md-running-text">
                     <input
+                        className="md-right-space"
                         type="text"
                         value={currentGuess}
                         disabled={isRevealed}
@@ -148,10 +161,17 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         Check answer
                     </button>
                 </p>
-                {isRevealed && (
-                    <p className="md-running-text">{currentGuess === solution ? "Correct!" : "Incorrect"}</p>
+                {isRevealed && <p className="md-running-text">{resultElement}</p>}
+                {isRevealed && !isCorrect && (
+                    <p className="md-running-text">
+                        The correct answer was <span className="md-strong">{solution}</span>.
+                    </p>
                 )}
-                {isRevealed && <p className="md-running-text">Solution: {solution}</p>}
+                <p className="md-running-text">
+                    <button className="md-button" onClick={this.handleNewWordClick}>
+                        Next word
+                    </button>
+                </p>
             </div>
         );
     };
