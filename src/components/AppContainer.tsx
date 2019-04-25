@@ -38,7 +38,8 @@ const ALL_CASE_NAMES = [
     "Locative (6.) - plural",
     "Instrumental (7.) - plural",
 ];
-const SELECTABLE_CASE_NUMBERS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+// const SELECTABLE_CASE_NUMBERS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+const SELECTABLE_CASE_NUMBERS = [8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14];
 
 import * as DATABASE_JSON from "../../database/words.json";
 const DATABASE = DATABASE_JSON as IWordDatabase;
