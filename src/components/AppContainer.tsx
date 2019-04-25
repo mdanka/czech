@@ -82,7 +82,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             <div className="app">
                 <h1>Czech Practice</h1>
                 <p className="md-running-text">
-                    {numberOfWords} words available. Source on{" "}
+                    <span className="md-strong">{numberOfWords} words available.</span> Source on{" "}
                     <a href="https://github.com/mdanka/czech" target="_blank">
                         Github
                     </a>
