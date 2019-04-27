@@ -190,8 +190,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         disabled={isRevealed}
                         onChange={this.handleCurrentGuessChange}
                     />
-                    <button className="md-button" onClick={this.handleCheck} disabled={isRevealed}>
+                    <button className="md-button md-right-space" onClick={this.handleCheck} disabled={isRevealed}>
                         Check answer
+                    </button>
+                    <button className="md-button" onClick={this.handleNewWordClick}>
+                        Next word
                     </button>
                 </p>
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
@@ -201,11 +204,6 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
-                <p className="md-running-text">
-                    <button className="md-button" onClick={this.handleNewWordClick}>
-                        Next word
-                    </button>
-                </p>
             </div>
         );
     };
