@@ -132,14 +132,16 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 </p>
                 <p className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</p>
                 <h3>Practise</h3>
-                {!isPlayInProgress && (
-                    <p className="md-running-text">
-                        <button className="md-button" onClick={this.handleNewWordClick}>
-                            Start
-                        </button>
-                    </p>
-                )}
-                {this.renderCurrentWord()}
+                <div className="czech-practice-container">
+                    {!isPlayInProgress && (
+                        <p className="md-running-text">
+                            <button className="md-button" onClick={this.handleStartClick}>
+                                Start
+                            </button>
+                        </p>
+                    )}
+                    {this.renderCurrentWord()}
+                </div>
             </div>
         );
     }
@@ -317,6 +319,10 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         };
     };
 
+    private scrollToBottom = () => {
+        window.scrollTo(0, document.body.scrollHeight);
+    };
+
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
         const currentGuess = event.target.value;
         this.setState({ currentGuess });
@@ -350,6 +356,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         }
         const { word: initialGuess } = word === undefined ? { word: "" } : word;
         this.setState({ currentWord: word, currentGuess: initialGuess, isRevealed: false });
+    };
+
+    private handleStartClick = () => {
+        this.handleNewWordClick();
+        this.scrollToBottom();
     };
 
     private handleCheck = () => {
