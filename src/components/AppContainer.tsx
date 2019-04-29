@@ -147,7 +147,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         Deselect all
                     </button>
                 </p>
-                <p className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</p>
+                <div className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</div>
                 <h3>Practise</h3>
                 <div className="czech-practice-container">
                     {!isPlayInProgress && (
@@ -166,12 +166,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     private renderCaseCheckboxes = (caseNumber: number) => {
         const { selectedCases } = this.state;
         return (
-            <div>
+            <div key={caseNumber}>
                 <input
                     type="checkbox"
                     checked={selectedCases.has(caseNumber)}
                     value={caseNumber}
-                    onClick={this.getCaseClickHandler(caseNumber)}
+                    onChange={this.getCaseClickHandler(caseNumber)}
                 />{" "}
                 {ALL_CASE_NAMES[caseNumber]}
                 <br />
@@ -212,6 +212,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         value={currentGuess}
                         disabled={isRevealed}
                         onChange={this.handleCurrentGuessChange}
+                        onKeyPress={this.getHandlerIfEnter(this.handleCheck)}
                     />
                     <button className="md-button md-right-space" onClick={this.handleCheck} disabled={isRevealed}>
                         Check answer
@@ -385,6 +386,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     private handleCheck = () => {
         this.setState({ isRevealed: true });
+    };
+
+    private getHandlerIfEnter = (handler: () => void) => (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key == "Enter") {
+            handler();
+        }
     };
 
     private getRandomWord = (): ICurrentWord | undefined => {
