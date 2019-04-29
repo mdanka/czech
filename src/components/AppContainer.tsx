@@ -39,6 +39,23 @@ const ALL_CASE_NAMES = [
     "Instrumental (7.) - plural",
 ];
 const SELECTABLE_CASE_NUMBERS = [8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14];
+const CASE_PREPOSITIONS = [
+    "",
+    "to je",
+    "bez",
+    "k/ke",
+    "vidím",
+    "ahoy",
+    "o",
+    "s/se",
+    "to jsou",
+    "bez",
+    "k/ke",
+    "vidím",
+    "ahoy",
+    "o",
+    "s/se",
+];
 
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
@@ -177,15 +194,18 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             <span className="md-strong md-intent-danger">✗ Incorrect</span>
         );
         const solutionParts = this.getSolutionParts(word, solution);
+        const casePreposition = CASE_PREPOSITIONS[caseNumber];
+        const caseName = ALL_CASE_NAMES[caseNumber];
         return (
             <div>
                 <p className="md-running-text">
                     The word <span className="md-strong">{word}</span> ({genderString})
                 </p>
                 <p className="md-running-text">
-                    in the case <span className="md-strong">{ALL_CASE_NAMES[caseNumber]}</span> is:
+                    in the case <span className="md-strong">{caseName}</span> is:
                 </p>
                 <p className="md-running-text">
+                    <span className="md-right-space">{casePreposition}</span>
                     <input
                         className="md-right-space"
                         type="text"
@@ -203,8 +223,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && !isCorrect && (
                     <p className="md-running-text">
-                        The correct answer was {solutionParts.beginning}
-                        <span className="md-strong">{solutionParts.ending}</span>.
+                        The correct answer was '{casePreposition} {solutionParts.beginning}
+                        <span className="md-strong">{solutionParts.ending}</span>'.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
