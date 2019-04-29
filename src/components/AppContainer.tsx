@@ -174,6 +174,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         ) : (
             <span className="md-strong md-intent-danger">✗ Incorrect</span>
         );
+        const solutionParts = this.getSolutionParts(word, solution);
         return (
             <div>
                 <p className="md-running-text">
@@ -200,7 +201,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && !isCorrect && (
                     <p className="md-running-text">
-                        The correct answer was <span className="md-strong">{solution}</span>.
+                        The correct answer was {solutionParts.beginning}
+                        <span className="md-strong">{solutionParts.ending}</span>.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
@@ -284,6 +286,35 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     private normalizeString = (value: string) => {
         return value.trim().toLowerCase();
+    };
+
+    /**
+     * Find where the end of the solution word is different from the original.
+     */
+    private getSolutionParts = (original: string, solution: string) => {
+        let differenceStartIndex = 0;
+        let isSubset = false;
+        while (differenceStartIndex < original.length) {
+            if (differenceStartIndex >= solution.length) {
+                isSubset = true;
+            }
+            const originalChar = original[differenceStartIndex];
+            const solutionChar = solution[differenceStartIndex];
+            if (originalChar !== solutionChar) {
+                break;
+            }
+            differenceStartIndex++;
+        }
+        if (isSubset) {
+            return {
+                beginning: solution,
+                ending: " + ø",
+            };
+        }
+        return {
+            beginning: solution.substring(0, differenceStartIndex),
+            ending: solution.substring(differenceStartIndex),
+        };
     };
 
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
