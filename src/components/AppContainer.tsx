@@ -1,4 +1,6 @@
 import * as React from "react";
+import { LocalData } from "./LocalData";
+import * as DATABASE_JSON from "../../database/words.json";
 
 interface ICase {
     singular: string | null;
@@ -64,7 +66,8 @@ const CASE_PREPOSITIONS = [
 
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
-import * as DATABASE_JSON from "../../database/words.json";
+const LOCAL_DATA_MANAGER = new LocalData();
+
 const DATABASE = DATABASE_JSON as IWordDatabase;
 const NUMBER_OF_WORDS = Object.keys(DATABASE).length;
 const NUMBER_OF_DECLENSIONS = Object.keys(DATABASE)
@@ -115,15 +118,15 @@ interface ICurrentWord {
 export class AppContainer extends React.PureComponent<{}, IAppState> {
     public constructor(props: {}) {
         super(props);
+        const localData = LOCAL_DATA_MANAGER.getLocalData();
+        const { settings } = localData;
         this.state = {
             currentWord: undefined,
             currentGuess: "",
             isRevealed: false,
-            selectedCases: new Set(SELECTABLE_CASE_NUMBERS.slice()),
+            selectedCases: new Set(settings.selectedCases),
         };
     }
-
-    public componentDidMount() {}
 
     public render() {
         const { currentWord } = this.state;
@@ -229,7 +232,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && !isCorrect && (
                     <p className="md-running-text">
-                        The correct answer was '{casePreposition}{solutionPartsList.map(this.renderSolutionParts)}'.
+                        The correct answer was '{casePreposition}
+                        {solutionPartsList.map(this.renderSolutionParts)}'.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
@@ -375,6 +379,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         window.scrollTo(0, document.body.scrollHeight);
     };
 
+    private setSelectedCases = (selectedCases: Set<number>) => {
+        this.setState({ selectedCases });
+        LOCAL_DATA_MANAGER.setSelectedCases(selectedCases);
+    };
+
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
         const currentGuess = event.target.value;
         this.setState({ currentGuess });
@@ -387,15 +396,16 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         } else {
             selectedCases.add(caseNumber);
         }
-        this.setState({ selectedCases: new Set(selectedCases) });
+        const newSelectedCases = new Set(selectedCases);
+        this.setSelectedCases(newSelectedCases);
     };
 
     private handleSelectAllClick = () => {
-        this.setState({ selectedCases: new Set(SELECTABLE_CASE_NUMBERS.slice()) });
+        this.setSelectedCases(new Set(SELECTABLE_CASE_NUMBERS.slice()));
     };
 
     private handleDeselectAllClick = () => {
-        this.setState({ selectedCases: new Set() });
+        this.setSelectedCases(new Set());
     };
 
     private handleNewWordClick = () => {

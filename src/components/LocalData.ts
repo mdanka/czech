@@ -6,7 +6,7 @@ export interface ILocalData {
         skipped: number;
     };
     settings: {
-        selectedCases: Set<number>;
+        selectedCases: number[];
     };
 }
 
@@ -21,11 +21,29 @@ export class LocalData {
             skipped: 0,
         },
         settings: {
-            selectedCases: new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+            selectedCases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
         },
     };
+    private localData: ILocalData;
 
-    public loadLocalData = (): ILocalData => {
+    public constructor() {
+        this.localData = this.loadLocalData();
+    }
+
+    public getLocalData = () => {
+        return this.localData;
+    };
+
+    public setSelectedCases = (selectedCases: Set<number>) => {
+        this.localData = { ...this.localData, settings: { ...this.localData.settings, selectedCases: Array.from(selectedCases.values()) } };
+        this.saveLocalData();
+    };
+
+    private saveLocalData = () => {
+        window.localStorage.setItem(LocalData.KEY, JSON.stringify(this.localData));
+    };
+
+    private loadLocalData = (): ILocalData => {
         const localDataString = window.localStorage.getItem(LocalData.KEY);
         if (localDataString === null) {
             return LocalData.DEFAULT_LOCAL_DATA;
@@ -35,10 +53,6 @@ export class LocalData {
             return localDataJson;
         }
         return LocalData.DEFAULT_LOCAL_DATA;
-    };
-
-    public saveLocalData = (localData: ILocalData) => {
-        window.localStorage.setItem(LocalData.KEY, JSON.stringify(localData));
     };
 
     private isLocalData(json: any): json is ILocalData {
