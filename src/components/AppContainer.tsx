@@ -19,6 +19,11 @@ interface IWordInformation {
     instrumental: ICase | null;
 }
 
+interface ISolutionParts {
+    beginning: string;
+    ending: string;
+}
+
 type IWordDatabase = { [word: string]: IWordInformation | null | undefined };
 
 const ALL_CASE_NAMES = [
@@ -193,7 +198,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         ) : (
             <span className="md-strong md-intent-danger">✗ Incorrect</span>
         );
-        const solutionParts = this.getSolutionParts(word, solution);
+        const solutionPartsList = this.getSolutionParts(word, solution);
         const casePreposition = CASE_PREPOSITIONS[caseNumber];
         const caseName = ALL_CASE_NAMES[caseNumber];
         return (
@@ -224,8 +229,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && !isCorrect && (
                     <p className="md-running-text">
-                        The correct answer was '{casePreposition} {solutionParts.beginning}
-                        <span className="md-strong">{solutionParts.ending}</span>'.
+                        The correct answer was '{casePreposition}{solutionPartsList.map(this.renderSolutionParts)}'.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
@@ -275,6 +279,17 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
+    private renderSolutionParts = (solutionParts: ISolutionParts) => {
+        const { beginning, ending } = solutionParts;
+        return (
+            <span key={beginning + ending}>
+                {" "}
+                {beginning}
+                <span className="md-strong">{ending}</span>
+            </span>
+        );
+    };
+
     private generateGenderString = (gender: IGender | null, isAnimated: boolean) => {
         if (gender == null) {
             return "";
@@ -312,9 +327,25 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     /**
+     * Find where the end of the solution word is different from the original
+     * for each word in the given string.
+     */
+    private getSolutionParts = (original: string, solution: string): ISolutionParts[] => {
+        const originalWords = original.split(" ").map(value => value.trim());
+        const solutionWords = solution.split(" ").map(value => value.trim());
+        if (originalWords.length !== solutionWords.length) {
+            return [{ beginning: solution, ending: "" }];
+        }
+        return originalWords.map((originalWord, index) => {
+            const solutionWord = solutionWords[index];
+            return this.getSolutionPartsForWord(originalWord, solutionWord);
+        });
+    };
+
+    /**
      * Find where the end of the solution word is different from the original.
      */
-    private getSolutionParts = (original: string, solution: string) => {
+    private getSolutionPartsForWord = (original: string, solution: string): ISolutionParts => {
         let differenceStartIndex = 0;
         let isSubset = false;
         while (differenceStartIndex < original.length) {
