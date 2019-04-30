@@ -35,7 +35,10 @@ export class LocalData {
     };
 
     public setSelectedCases = (selectedCases: Set<number>) => {
-        this.localData = { ...this.localData, settings: { ...this.localData.settings, selectedCases: Array.from(selectedCases.values()) } };
+        this.localData = {
+            ...this.localData,
+            settings: { ...this.localData.settings, selectedCases: Array.from(selectedCases.values()) },
+        };
         this.saveLocalData();
     };
 
