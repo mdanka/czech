@@ -254,7 +254,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const callToAction = "Click here to report an incorrect declension.";
         const issueTitle = `Wrong solution for "${word}"`;
         const issueBody = `The word \`${word} (${genderString})\` in the case \`${caseName}\` is specified as \`${solution}\`, but I think it is incorrect because... <fill in why>`;
-        return this.renderCreateIssueLink(question, callToAction, issueTitle, issueBody, "bug");
+        return this.renderCreateIssueLink(question, callToAction, issueTitle, issueBody, "word");
     };
 
     private renderCreateIssueLink = (
