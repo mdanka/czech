@@ -63,7 +63,8 @@ def getCaseValue(value):
     strippedValue = value.strip()
     if strippedValue == u"—" or strippedValue == u"":
         return None
-    return strippedValue
+    multipleValues = map(lambda value: value.strip(), strippedValue.split(u"/"))
+    return multipleValues
 
 def getCase(case):
     return {
