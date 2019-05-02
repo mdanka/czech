@@ -1,4 +1,6 @@
 import * as React from "react";
+import { LocalData } from "./LocalData";
+import * as DATABASE_JSON from "../../database/words.json";
 
 interface ICase {
     singular: string | null;
@@ -17,6 +19,11 @@ interface IWordInformation {
     vocative: ICase | null;
     locative: ICase | null;
     instrumental: ICase | null;
+}
+
+interface ISolutionParts {
+    beginning: string;
+    ending: string;
 }
 
 type IWordDatabase = { [word: string]: IWordInformation | null | undefined };
@@ -59,7 +66,8 @@ const CASE_PREPOSITIONS = [
 
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
-import * as DATABASE_JSON from "../../database/words.json";
+const LOCAL_DATA_MANAGER = new LocalData();
+
 const DATABASE = DATABASE_JSON as IWordDatabase;
 const NUMBER_OF_WORDS = Object.keys(DATABASE).length;
 const NUMBER_OF_DECLENSIONS = Object.keys(DATABASE)
@@ -110,15 +118,15 @@ interface ICurrentWord {
 export class AppContainer extends React.PureComponent<{}, IAppState> {
     public constructor(props: {}) {
         super(props);
+        const localData = LOCAL_DATA_MANAGER.getLocalData();
+        const { settings } = localData;
         this.state = {
             currentWord: undefined,
             currentGuess: "",
             isRevealed: false,
-            selectedCases: new Set(SELECTABLE_CASE_NUMBERS.slice()),
+            selectedCases: new Set(settings.selectedCases),
         };
     }
-
-    public componentDidMount() {}
 
     public render() {
         const { currentWord } = this.state;
@@ -193,7 +201,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         ) : (
             <span className="md-strong md-intent-danger">✗ Incorrect</span>
         );
-        const solutionParts = this.getSolutionParts(word, solution);
+        const solutionPartsList = this.getSolutionParts(word, solution);
         const casePreposition = CASE_PREPOSITIONS[caseNumber];
         const caseName = ALL_CASE_NAMES[caseNumber];
         return (
@@ -224,8 +232,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && !isCorrect && (
                     <p className="md-running-text">
-                        The correct answer was '{casePreposition} {solutionParts.beginning}
-                        <span className="md-strong">{solutionParts.ending}</span>'.
+                        The correct answer was '{casePreposition}
+                        {solutionPartsList.map(this.renderSolutionParts)}'.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
@@ -275,6 +283,17 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
+    private renderSolutionParts = (solutionParts: ISolutionParts) => {
+        const { beginning, ending } = solutionParts;
+        return (
+            <span key={beginning + ending}>
+                {" "}
+                {beginning}
+                <span className="md-strong">{ending}</span>
+            </span>
+        );
+    };
+
     private generateGenderString = (gender: IGender | null, isAnimated: boolean) => {
         if (gender == null) {
             return "";
@@ -312,9 +331,25 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     /**
+     * Find where the end of the solution word is different from the original
+     * for each word in the given string.
+     */
+    private getSolutionParts = (original: string, solution: string): ISolutionParts[] => {
+        const originalWords = original.split(" ").map(value => value.trim());
+        const solutionWords = solution.split(" ").map(value => value.trim());
+        if (originalWords.length !== solutionWords.length) {
+            return [{ beginning: solution, ending: "" }];
+        }
+        return originalWords.map((originalWord, index) => {
+            const solutionWord = solutionWords[index];
+            return this.getSolutionPartsForWord(originalWord, solutionWord);
+        });
+    };
+
+    /**
      * Find where the end of the solution word is different from the original.
      */
-    private getSolutionParts = (original: string, solution: string) => {
+    private getSolutionPartsForWord = (original: string, solution: string): ISolutionParts => {
         let differenceStartIndex = 0;
         let isSubset = false;
         while (differenceStartIndex < original.length) {
@@ -344,6 +379,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         window.scrollTo(0, document.body.scrollHeight);
     };
 
+    private setSelectedCases = (selectedCases: Set<number>) => {
+        this.setState({ selectedCases });
+        LOCAL_DATA_MANAGER.setSelectedCases(selectedCases);
+    };
+
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
         const currentGuess = event.target.value;
         this.setState({ currentGuess });
@@ -356,15 +396,16 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         } else {
             selectedCases.add(caseNumber);
         }
-        this.setState({ selectedCases: new Set(selectedCases) });
+        const newSelectedCases = new Set(selectedCases);
+        this.setSelectedCases(newSelectedCases);
     };
 
     private handleSelectAllClick = () => {
-        this.setState({ selectedCases: new Set(SELECTABLE_CASE_NUMBERS.slice()) });
+        this.setSelectedCases(new Set(SELECTABLE_CASE_NUMBERS.slice()));
     };
 
     private handleDeselectAllClick = () => {
-        this.setState({ selectedCases: new Set() });
+        this.setSelectedCases(new Set());
     };
 
     private handleNewWordClick = () => {
