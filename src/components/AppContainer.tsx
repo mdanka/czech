@@ -217,7 +217,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         onChange={this.handleCurrentGuessChange}
                         onKeyPress={this.getHandlerIfEnter(this.handleCheck)}
                     />
-                    <button className="md-button md-right-space" onClick={this.handleCheck} disabled={isRevealed}>
+                    <button
+                        className="md-button md-right-space md-intent-primary"
+                        onClick={this.handleCheck}
+                        disabled={isRevealed}
+                    >
                         Check answer
                     </button>
                     <button className="md-button" onClick={this.handleNewWordClick}>
