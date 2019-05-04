@@ -3,8 +3,8 @@ import { LocalData } from "./LocalData";
 import * as DATABASE_JSON from "../../database/words.json";
 
 interface ICase {
-    singular: string | null;
-    plural: string | null;
+    singular: string[];
+    plural: string[];
 }
 
 type IGender = "m" | "f" | "n";
@@ -84,13 +84,7 @@ const NUMBER_OF_DECLENSIONS = Object.keys(DATABASE)
                         return 0;
                     }
                     const { singular, plural } = wordCase;
-                    if (singular == null && plural == null) {
-                        return 0;
-                    }
-                    if (singular != null && plural != null) {
-                        return 2;
-                    }
-                    return 1;
+                    return singular.length + plural.length;
                 },
             )
             .reduce(SUM_REDUCER, 0);
@@ -112,7 +106,7 @@ interface ICurrentWord {
     word: string;
     info: IWordInformation;
     caseNumber: number;
-    solution: string;
+    solutions: string[];
 }
 
 export class AppContainer extends React.PureComponent<{}, IAppState> {
@@ -192,7 +186,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         if (currentWord == null) {
             return null;
         }
-        const { word, solution, caseNumber, info } = currentWord;
+        const { word, solutions, caseNumber, info } = currentWord;
         const { gender, isAnimated } = info;
         const genderString = this.generateGenderString(gender, isAnimated);
         const isCorrect = this.isGuessCorrect();
@@ -201,7 +195,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         ) : (
             <span className="md-strong md-intent-danger">✗ Incorrect</span>
         );
-        const solutionPartsList = this.getSolutionParts(word, solution);
+        const solutionsPartsList = this.getSolutionsParts(word, solutions);
         const casePreposition = CASE_PREPOSITIONS[caseNumber];
         const caseName = ALL_CASE_NAMES[caseNumber];
         return (
@@ -232,8 +226,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && !isCorrect && (
                     <p className="md-running-text">
-                        The correct answer was '{casePreposition}
-                        {solutionPartsList.map(this.renderSolutionParts)}'.
+                        The correct answer was '{casePreposition} {solutionsPartsList.map(this.renderSolutionsParts)}'.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
@@ -254,14 +247,16 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         if (currentWord === undefined) {
             return null;
         }
-        const { word, info, solution, caseNumber } = currentWord;
+        const { word, info, solutions, caseNumber } = currentWord;
         const caseName = ALL_CASE_NAMES[caseNumber];
         const { gender, isAnimated } = info;
         const genderString = this.generateGenderString(gender, isAnimated);
         const question = "Do you disagree with this answer?";
         const callToAction = "Click here to report an incorrect declension.";
         const issueTitle = `Wrong solution for "${word}"`;
-        const issueBody = `The word \`${word} (${genderString})\` in the case \`${caseName}\` is specified as \`${solution}\`, but I think it is incorrect because... <fill in why>`;
+        const issueBody = `The word \`${word} (${genderString})\` in the case \`${caseName}\` is specified as \`${solutions.join(
+            ", ",
+        )}\`, but I think it is incorrect because... <fill in why>`;
         return this.renderCreateIssueLink(question, callToAction, issueTitle, issueBody, "word");
     };
 
@@ -283,11 +278,19 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
-    private renderSolutionParts = (solutionParts: ISolutionParts) => {
+    private renderSolutionsParts = (solutionsParts: ISolutionParts[]) => {
+        return (
+            <span>
+                {solutionsParts.map((solutionParts, index) => this.renderSolutionParts(solutionParts, index > 0))}
+            </span>
+        );
+    };
+
+    private renderSolutionParts = (solutionParts: ISolutionParts, withSeparatorBefore: boolean) => {
         const { beginning, ending } = solutionParts;
         return (
             <span key={beginning + ending}>
-                {" "}
+                {withSeparatorBefore ? " / " : ""}
                 {beginning}
                 <span className="md-strong">{ending}</span>
             </span>
@@ -322,12 +325,21 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         if (currentWord == null) {
             return false;
         }
-        const { solution } = currentWord;
-        return this.normalizeString(currentGuess) === this.normalizeString(solution);
+        const normalizedGuess = this.normalizeString(currentGuess);
+        const { solutions } = currentWord;
+        const normalizedSolutions = solutions.map(this.normalizeString);
+        return normalizedSolutions.indexOf(normalizedGuess) !== -1;
     };
 
     private normalizeString = (value: string) => {
         return value.trim().toLowerCase();
+    };
+
+    /**
+     * Finds suffix differences for each solution.
+     */
+    private getSolutionsParts = (original: string, solutions: string[]): ISolutionParts[][] => {
+        return solutions.map(solution => this.getSolutionParts(original, solution));
     };
 
     /**
@@ -451,15 +463,15 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             return;
         }
         const cases = this.wordInfoToCaseList(info);
-        const solution = cases[caseNumber];
-        if (solution === "") {
+        const solutions = cases[caseNumber];
+        if (solutions.length === 0) {
             return;
         }
         return {
             word,
             info,
             caseNumber,
-            solution,
+            solutions,
         };
     };
 
@@ -474,7 +486,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     private wordInfoToCaseList = (info: IWordInformation) => {
         const { nominative, genitive, dative, accusative, vocative, locative, instrumental } = info;
         return [
-            "",
+            [],
             this.caseToString(nominative, true),
             this.caseToString(genitive, true),
             this.caseToString(dative, true),
@@ -494,6 +506,6 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     private caseToString = (caseObject: ICase | null, isSingular: boolean) => {
         const caseStringOrNull = caseObject == null ? null : isSingular ? caseObject.singular : caseObject.plural;
-        return caseStringOrNull == null ? "" : caseStringOrNull;
+        return caseStringOrNull == null ? [] : caseStringOrNull;
     };
 }
