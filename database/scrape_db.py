@@ -36,6 +36,8 @@ def getWordsForLetter(letter):
 def getAllWords():
     wordsListList = list(map(getWordsForLetter, WIKTIONARY_WORD_LIST_LETTERS))
     wordsList = [item for sublist in wordsListList for item in sublist]
+    # Remove words which start with "Uživatel"
+    wordsListFiltered = list(filter(lambda word: not u"Uživatel:" in word, wordsList))
     uniqueWordsList = list(set(wordsList))
     uniqueWordsList.sort()
     return uniqueWordsList
