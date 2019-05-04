@@ -59,21 +59,30 @@ def genderStringToAnimated(genderString):
 
 def getCaseValue(value):
     if value == None:
-        return None
+        return []
     strippedValue = value.strip()
     if strippedValue == u"—" or strippedValue == u"":
-        return None
-    multipleValues = map(lambda value: value.strip(), strippedValue.split(u"/"))
+        return []
+    multipleValues = list(map(lambda value: value.strip(), strippedValue.split(u"/")))
     return multipleValues
 
 def getCase(case):
     return {
-        'singular': getCaseValue(case[0]) if len(case) >= 1 else None,
-        'plural': getCaseValue(case[1]) if len(case) >= 2 else None
+        'singular': getCaseValue(case[0]) if len(case) >= 1 else [],
+        'plural': getCaseValue(case[1]) if len(case) >= 2 else []
     }
 
+def getCaseXPath(caseName, indexString):
+    return '//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td[' + indexString + ']/descendant-or-self::*/text()'
+
 def getCaseFromTree(tree, caseName):
-    matches = tree.xpath('//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td/descendant-or-self::*/text()')
+    singularMatches = tree.xpath(getCaseXPath(caseName, "1"))
+    pluralMatches = tree.xpath(getCaseXPath(caseName, "2"))
+    singularText = "".join(singularMatches)
+    pluralText = "".join(pluralMatches)
+    matches = [singularText, pluralText]
+    # Only singular or plural column
+    # TODO(mdanka): log error
     if len(matches) < 2:
         return None
     return matches
@@ -118,7 +127,40 @@ def writeStringToFile(filename, string):
     myFile.write(string)
     myFile.close()
 
+###########
+# TESTING #
+###########
+
+TEST_CASES = {
+    "absolvent": u'{"gender": "m", "isAnimated": true, "nominative": {"singular": ["absolvent"], "plural": ["absolventi"]}, "genitive": {"singular": ["absolventa"], "plural": ["absolvent\u016f"]}, "dative": {"singular": ["absolventu", "absolventovi"], "plural": ["absolvent\u016fm"]}, "accusative": {"singular": ["absolventa"], "plural": ["absolventy"]}, "vocative": {"singular": ["absolvente"], "plural": ["absolventi"]}, "locative": {"singular": ["absolventu", "absolventovi"], "plural": ["absolventech"]}, "instrumental": {"singular": ["absolventem"], "plural": ["absolventy"]}}',
+    "kandelábr": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["kandel\u00e1br"], "plural": ["kandel\u00e1bry"]}, "genitive": {"singular": ["kandel\u00e1bru"], "plural": ["kandel\u00e1br\u016f"]}, "dative": {"singular": ["kandel\u00e1bru"], "plural": ["kandel\u00e1br\u016fm"]}, "accusative": {"singular": ["kandel\u00e1br"], "plural": ["kandel\u00e1bry"]}, "vocative": {"singular": ["kandel\u00e1bre", "kandel\u00e1b\u0159e"], "plural": ["kandel\u00e1bry"]}, "locative": {"singular": ["kandel\u00e1bru"], "plural": ["kandel\u00e1brech"]}, "instrumental": {"singular": ["kandel\u00e1brem"], "plural": ["kandel\u00e1bry"]}}',
+    "chlápek": u'{"gender": "m", "isAnimated": true, "nominative": {"singular": ["chl\u00e1pek"], "plural": ["chl\u00e1pci", "chl\u00e1pkov\u00e9"]}, "genitive": {"singular": ["chl\u00e1pka"], "plural": ["chl\u00e1pk\u016f"]}, "dative": {"singular": ["chl\u00e1pkovi", "chl\u00e1pku"], "plural": ["chl\u00e1pk\u016fm"]}, "accusative": {"singular": ["chl\u00e1pka"], "plural": ["chl\u00e1pky"]}, "vocative": {"singular": ["chl\u00e1pku"], "plural": ["chl\u00e1pkov\u00e9", "chl\u00e1pci"]}, "locative": {"singular": ["chl\u00e1pkovi", "chl\u00e1pku"], "plural": ["chl\u00e1pc\u00edch[1]"]}, "instrumental": {"singular": ["chl\u00e1pkem"], "plural": ["chl\u00e1pky"]}}',
+    "jedenáctiúhelník": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["jeden\u00e1cti\u00faheln\u00edk"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}, "genitive": {"singular": ["jeden\u00e1cti\u00faheln\u00edka", "jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edk\u016f"]}, "dative": {"singular": ["jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edk\u016fm"]}, "accusative": {"singular": ["jeden\u00e1cti\u00faheln\u00edk"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}, "vocative": {"singular": ["jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}, "locative": {"singular": ["jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edc\u00edch"]}, "instrumental": {"singular": ["jeden\u00e1cti\u00faheln\u00edkem"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}}',
+    "Ahaggar": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["Ahaggar"], "plural": []}, "genitive": {"singular": ["Ahaggaru"], "plural": []}, "dative": {"singular": ["Ahaggaru"], "plural": []}, "accusative": {"singular": ["Ahaggar"], "plural": []}, "vocative": {"singular": ["Ahaggare"], "plural": []}, "locative": {"singular": ["Ahaggaru"], "plural": []}, "instrumental": {"singular": ["Ahaggarem"], "plural": []}}',
+    "aha": u'{"gender": "n", "isAnimated": false, "nominative": {"singular": ["aha"], "plural": []}, "genitive": {"singular": [], "plural": []}, "dative": {"singular": [], "plural": []}, "accusative": {"singular": [], "plural": []}, "vocative": {"singular": [], "plural": []}, "locative": {"singular": [], "plural": []}, "instrumental": {"singular": [], "plural": []}}'
+}
+
+def checkEqual(expected, actual, word):
+    if (expected == actual):
+        print("[Test passed]")
+        return True
+    print(u"[TEST ERROR] For word '{word}': expected\n{expected}\nbut received\n{actual}\n".format(expected = json.dumps(expected), actual = json.dumps(actual), word = word))
+    return False
+
+def test():
+    results = []
+    for word, expectedJsonString in TEST_CASES.items():
+        expectedDictionary = json.loads(expectedJsonString)
+        actualDictionary = getWordInformation(word)
+        result = checkEqual(expectedDictionary, actualDictionary, word)
+        results.append(result)
+    return all(results)
+
 def main():
+    testResult = test()
+    if not testResult:
+        print("TESTS FAILED. Quitting...")
+        sys.exit()
     allWordInformation = getAllWordInformation()
     allWordInformationJson = json.dumps(allWordInformation)
     print("### Persisting to files...")
