@@ -224,7 +224,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     </button>
                 </p>
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
-                {isRevealed && !isCorrect && (
+                {isRevealed && (
                     <p className="md-running-text">
                         The correct answer was '{casePreposition} {solutionsPartsList.map(this.renderSolutionsParts)}'.
                     </p>
