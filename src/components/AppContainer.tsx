@@ -278,19 +278,19 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
-    private renderSolutionsParts = (solutionsParts: ISolutionParts[]) => {
+    private renderSolutionsParts = (solutionsParts: ISolutionParts[], index: number) => {
         return (
-            <span>
-                {solutionsParts.map((solutionParts, index) => this.renderSolutionParts(solutionParts, index > 0))}
+            <span key={JSON.stringify(solutionsParts)}>
+                {index > 0 ? " / " : ""}
+                {solutionsParts.map(this.renderSolutionParts)}
             </span>
         );
     };
 
-    private renderSolutionParts = (solutionParts: ISolutionParts, withSeparatorBefore: boolean) => {
+    private renderSolutionParts = (solutionParts: ISolutionParts) => {
         const { beginning, ending } = solutionParts;
         return (
             <span key={beginning + ending}>
-                {withSeparatorBefore ? " / " : ""}
                 {beginning}
                 <span className="md-strong">{ending}</span>
             </span>
