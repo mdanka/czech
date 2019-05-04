@@ -129,7 +129,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             <div className="app">
                 <h1>Czech Practice</h1>
                 <p className="md-running-text">
-                    Practise Czech grammar and declensions in this interactive app with<br />
+                    Practise Czech grammar and declensions in this interactive app with{" "}
                     <span className="md-strong">{NUMBER_OF_WORDS} words</span> and{" "}
                     <span className="md-strong">{NUMBER_OF_DECLENSIONS} declensions</span>.
                 </p>
