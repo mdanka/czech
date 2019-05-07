@@ -5,6 +5,7 @@ import requests
 import sys
 import urllib3
 import json
+import sys
 
 urllib3.disable_warnings()
 
@@ -119,8 +120,8 @@ def getWordInformation(word):
         'instrumental': getCase(casesFiltered[6]),
     }
 
-def getAllWordInformation():
-    allWords = getAllWords()
+def getAllWordInformation(isTestMode):
+    allWords = ["absolvent"] if isTestMode else getAllWords()
     wordMap = {word:getWordInformation(word) for word in allWords}
     return wordMap
 
@@ -128,6 +129,12 @@ def writeStringToFile(filename, string):
     myFile = open(filename, "w", encoding='utf-8')
     myFile.write(string)
     myFile.close()
+
+def writeErrorsToFile():
+    noGenderErrors = "\n".join(ERROR_NO_GENDER)
+    no7CasesErrors = "\n".join(ERROR_NO_7_CASES)
+    errorText = "# No gender available:\n" + noGenderErrors + "\n\n# No 7 cases found:\n" + no7CasesErrors + "\n"
+    writeStringToFile(r"errors.txt", errorText)
 
 ###########
 # TESTING #
@@ -161,18 +168,23 @@ def test():
     return all(results)
 
 def main():
+    isTestMode = len(sys.argv) > 1
+    if isTestMode:
+        print("~~~~~~~~~~~~~~~~~")
+        print("~~~ TEST MODE ~~~")
+        print("~~~~~~~~~~~~~~~~~")
+    # Unit tests
     testResult = test()
     if not testResult:
         print("TESTS FAILED. Quitting...")
         sys.exit()
-    allWordInformation = getAllWordInformation()
+    allWordInformation = getAllWordInformation(isTestMode)
     allWordInformationJson = json.dumps(allWordInformation)
     print("### Persisting to files...")
     # Persist words
     writeStringToFile(r"words.json", allWordInformationJson)
-    # Persist issues
-    writeStringToFile(r"errors_no_gender.txt", "\n".join(ERROR_NO_GENDER))
-    writeStringToFile(r"errors_no_7_cases.txt", "\n".join(ERROR_NO_7_CASES))
+    # Persist errors
+    writeErrorsToFile()
     print("Done.")
 
 if __name__ == "__main__":
