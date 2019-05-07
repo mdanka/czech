@@ -76,7 +76,7 @@ def getCase(case):
     }
 
 def getCaseXPath(caseName, indexString):
-    return '//*[@id="mw-content-text"]/div/table/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td[' + indexString + ']/descendant-or-self::*/text()'
+    return '//*[@id="mw-content-text"]/div/table[1]/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td[' + indexString + ']/descendant-or-self::*/text()'
 
 def getCaseFromTree(tree, caseName):
     singularMatches = tree.xpath(getCaseXPath(caseName, "1"))
@@ -141,14 +141,23 @@ def writeErrorsToFile():
 ###########
 
 TEST_CASES = {
+    # Multiple solutions
     "absolvent": u'{"gender": "m", "isAnimated": true, "nominative": {"singular": ["absolvent"], "plural": ["absolventi"]}, "genitive": {"singular": ["absolventa"], "plural": ["absolvent\u016f"]}, "dative": {"singular": ["absolventu", "absolventovi"], "plural": ["absolvent\u016fm"]}, "accusative": {"singular": ["absolventa"], "plural": ["absolventy"]}, "vocative": {"singular": ["absolvente"], "plural": ["absolventi"]}, "locative": {"singular": ["absolventu", "absolventovi"], "plural": ["absolventech"]}, "instrumental": {"singular": ["absolventem"], "plural": ["absolventy"]}}',
     "kandelábr": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["kandel\u00e1br"], "plural": ["kandel\u00e1bry"]}, "genitive": {"singular": ["kandel\u00e1bru"], "plural": ["kandel\u00e1br\u016f"]}, "dative": {"singular": ["kandel\u00e1bru"], "plural": ["kandel\u00e1br\u016fm"]}, "accusative": {"singular": ["kandel\u00e1br"], "plural": ["kandel\u00e1bry"]}, "vocative": {"singular": ["kandel\u00e1bre", "kandel\u00e1b\u0159e"], "plural": ["kandel\u00e1bry"]}, "locative": {"singular": ["kandel\u00e1bru"], "plural": ["kandel\u00e1brech"]}, "instrumental": {"singular": ["kandel\u00e1brem"], "plural": ["kandel\u00e1bry"]}}',
     "chlápek": u'{"gender": "m", "isAnimated": true, "nominative": {"singular": ["chl\u00e1pek"], "plural": ["chl\u00e1pci", "chl\u00e1pkov\u00e9"]}, "genitive": {"singular": ["chl\u00e1pka"], "plural": ["chl\u00e1pk\u016f"]}, "dative": {"singular": ["chl\u00e1pkovi", "chl\u00e1pku"], "plural": ["chl\u00e1pk\u016fm"]}, "accusative": {"singular": ["chl\u00e1pka"], "plural": ["chl\u00e1pky"]}, "vocative": {"singular": ["chl\u00e1pku"], "plural": ["chl\u00e1pkov\u00e9", "chl\u00e1pci"]}, "locative": {"singular": ["chl\u00e1pkovi", "chl\u00e1pku"], "plural": ["chl\u00e1pc\u00edch[1]"]}, "instrumental": {"singular": ["chl\u00e1pkem"], "plural": ["chl\u00e1pky"]}}',
     "jedenáctiúhelník": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["jeden\u00e1cti\u00faheln\u00edk"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}, "genitive": {"singular": ["jeden\u00e1cti\u00faheln\u00edka", "jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edk\u016f"]}, "dative": {"singular": ["jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edk\u016fm"]}, "accusative": {"singular": ["jeden\u00e1cti\u00faheln\u00edk"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}, "vocative": {"singular": ["jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}, "locative": {"singular": ["jeden\u00e1cti\u00faheln\u00edku"], "plural": ["jeden\u00e1cti\u00faheln\u00edc\u00edch"]}, "instrumental": {"singular": ["jeden\u00e1cti\u00faheln\u00edkem"], "plural": ["jeden\u00e1cti\u00faheln\u00edky"]}}',
+    # No plural
     "Ahaggar": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["Ahaggar"], "plural": []}, "genitive": {"singular": ["Ahaggaru"], "plural": []}, "dative": {"singular": ["Ahaggaru"], "plural": []}, "accusative": {"singular": ["Ahaggar"], "plural": []}, "vocative": {"singular": ["Ahaggare"], "plural": []}, "locative": {"singular": ["Ahaggaru"], "plural": []}, "instrumental": {"singular": ["Ahaggarem"], "plural": []}}',
+    # No declensions
     "aha": u'{"gender": "n", "isAnimated": false, "nominative": {"singular": ["aha"], "plural": []}, "genitive": {"singular": [], "plural": []}, "dative": {"singular": [], "plural": []}, "accusative": {"singular": [], "plural": []}, "vocative": {"singular": [], "plural": []}, "locative": {"singular": [], "plural": []}, "instrumental": {"singular": [], "plural": []}}',
+    # Normal
     "jalovice": u'{"gender": "f", "isAnimated": false, "nominative": {"singular": ["jalovice"], "plural": ["jalovice"]}, "genitive": {"singular": ["jalovice"], "plural": ["jalovic"]}, "dative": {"singular": ["jalovici"], "plural": ["jalovic\u00edm"]}, "accusative": {"singular": ["jalovici"], "plural": ["jalovice"]}, "vocative": {"singular": ["jalovice"], "plural": ["jalovice"]}, "locative": {"singular": ["jalovici"], "plural": ["jalovic\u00edch"]}, "instrumental": {"singular": ["jalovic\u00ed"], "plural": ["jalovicemi"]}}',
-    "naplat": u'null'
+    # No gender
+    "naplat": u'null',
+    # Multiple declension tables (we pick the first one)
+    "haken": u'{}',
+    # Multiple nouns tables (for now, we just take the first one)
+    "pahejl": u'{}'
 }
 
 def checkEqual(expected, actual, word):
