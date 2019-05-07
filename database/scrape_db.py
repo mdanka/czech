@@ -130,11 +130,23 @@ def writeStringToFile(filename, string):
     myFile.write(string)
     myFile.close()
 
+def getWiktionaryUrlForWord(word):
+    return u"https://cs.wiktionary.org/wiki/{word}".format(word = word)
+
+def getErrorLineForWord(word):
+    url = getWiktionaryUrlForWord(word)
+    return u"* [{word}]({url})\n".format(word = word, url = url)
+
+def getErrorString(title, errorList):
+    errorLines = "".join(list(map(getErrorLineForWord, errorList)))
+    return u"# {title}:\n\n{errorLines}\n\n".format(title = title, errorLines = errorLines)
+
 def writeErrorsToFile():
     noGenderErrors = "\n".join(ERROR_NO_GENDER)
     no7CasesErrors = "\n".join(ERROR_NO_7_CASES)
-    errorText = "# No gender available:\n" + noGenderErrors + "\n\n# No 7 cases found:\n" + no7CasesErrors + "\n"
-    writeStringToFile(r"errors.txt", errorText)
+    errorStrings = [getErrorString("No gender available", ERROR_NO_GENDER), getErrorString("No 7 cases found", ERROR_NO_7_CASES)]
+    errorText = "".join(errorStrings)
+    writeStringToFile(r"errors.md", errorText)
 
 ###########
 # TESTING #
