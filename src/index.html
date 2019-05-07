@@ -9,6 +9,15 @@
   <meta property="og:url" content="https://czech.miklosdanka.com/" />
   <meta property="og:title" content="Czech Practice" />
   <title>Czech Practice</title>
+  <script>
+    // Check that service workers are registered
+    if ('serviceWorker' in navigator) {
+      // Use the window load event to keep the page load performant
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+  </script>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-62449435-7"></script>
   <script>
