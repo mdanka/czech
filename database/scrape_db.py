@@ -95,7 +95,7 @@ def getWordInformation(word):
     fullUrl = WIKTIONARY_WORD_BASE_URL + word
     pageContent = getPage(fullUrl)
     tree = html.fromstring(pageContent)
-    genderList = tree.xpath('//*[@id="mw-content-text"]/div/ul/li/i[starts-with(normalize-space(text()), "rod")]/text()')
+    genderList = tree.xpath('//*[@id="mw-content-text"]/div/ul/li/i[starts-with(normalize-space(text()), "rod")][1]/text()')
     genderString = None if len(genderList) == 0 else genderList[0]
     if genderString == None:
         print(u"!!! No GENDER information for: " + word)
