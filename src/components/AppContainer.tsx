@@ -111,6 +111,9 @@ interface ICurrentWord {
 }
 
 export class AppContainer extends React.PureComponent<{}, IAppState> {
+    private practiceInputRef = React.createRef<HTMLInputElement>();
+    private practiceNextWordButtonRef = React.createRef<HTMLButtonElement>();
+
     public constructor(props: {}) {
         super(props);
         const localData = LOCAL_DATA_MANAGER.getLocalData();
@@ -219,6 +222,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         disabled={isRevealed}
                         onChange={this.handleCurrentGuessChange}
                         onKeyPress={this.getHandlerIfEnter(this.handleCheck)}
+                        ref={this.practiceInputRef}
                     />
                     <button
                         className="md-button md-right-space md-intent-primary"
@@ -227,7 +231,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     >
                         Check answer
                     </button>
-                    <button className="md-button" onClick={this.handleSkipClick}>
+                    <button className="md-button" onClick={this.handleSkipClick} ref={this.practiceNextWordButtonRef}>
                         Next word
                     </button>
                 </p>
@@ -311,8 +315,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         return (
             <p>
                 <span className="md-intent-success">{correct} correct,</span>{" "}
-                <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped{" "}
-                - <a onClick={this.resetScores}>reset</a>
+                <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped -{" "}
+                <a onClick={this.resetScores}>reset</a>
             </p>
         );
     };
@@ -464,7 +468,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             numTries++;
         }
         const { word: initialGuess } = word === undefined ? { word: "" } : word;
-        this.setState({ currentWord: word, currentGuess: initialGuess, isRevealed: false });
+        this.setState({ currentWord: word, currentGuess: initialGuess, isRevealed: false }, this.focusOnPracticeInput);
         if (isSkipped) {
             this.increaseScore("skipped");
         }
@@ -484,12 +488,30 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.setState({ isRevealed: true });
         const isGuessCorrect = this.isGuessCorrect();
         this.increaseScore(isGuessCorrect ? "correct" : "wrong");
+        this.focusOnNextWordButton();
     };
 
-    private getHandlerIfEnter = (handler: () => void) => (event: React.KeyboardEvent<HTMLInputElement>) => {
+    private getHandlerIfEnter = (handler: (event: any) => any) => (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key == "Enter") {
-            handler();
+            handler(event);
         }
+    };
+
+    private focusOnNextWordButton = () => {
+        console.log("FOCUS: focusOnNextWordButton");
+        this.focusOnRef(this.practiceNextWordButtonRef);
+    };
+
+    private focusOnPracticeInput = () => {
+        console.log("FOCUS: focusOnPracticeInput");
+        this.focusOnRef(this.practiceInputRef);
+    };
+
+    private focusOnRef = (refObject: React.RefObject<HTMLElement>) => {
+        console.log("FOCUS: focusOnRef");
+        const element = refObject.current;
+        console.log(element);
+        element !== null && element.focus();
     };
 
     private getRandomWord = (): ICurrentWord | undefined => {
