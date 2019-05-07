@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LocalData } from "./LocalData";
+import { LocalData, IScores } from "./LocalData";
 import * as DATABASE_JSON from "../../database/words.json";
 
 interface ICase {
@@ -100,6 +100,7 @@ interface IAppState {
      * 8-14 refers to each of the plural cases.
      */
     selectedCases: Set<number>;
+    scores: IScores;
 }
 
 interface ICurrentWord {
@@ -113,12 +114,13 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     public constructor(props: {}) {
         super(props);
         const localData = LOCAL_DATA_MANAGER.getLocalData();
-        const { settings } = localData;
+        const { settings, scores } = localData;
         this.state = {
             currentWord: undefined,
             currentGuess: "",
             isRevealed: false,
             selectedCases: new Set(settings.selectedCases),
+            scores,
         };
     }
 
@@ -201,6 +203,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const caseName = ALL_CASE_NAMES[caseNumber];
         return (
             <div>
+                {this.renderScores()}
                 <p className="md-running-text">
                     The word <span className="md-strong">{word}</span> ({genderString})
                 </p>
@@ -224,7 +227,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     >
                         Check answer
                     </button>
-                    <button className="md-button" onClick={this.handleNewWordClick}>
+                    <button className="md-button" onClick={this.handleSkipClick}>
                         Next word
                     </button>
                 </p>
@@ -299,6 +302,18 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {beginning}
                 <span className="md-strong">{ending}</span>
             </span>
+        );
+    };
+
+    private renderScores = () => {
+        const { scores } = this.state;
+        const { correct, wrong, skipped } = scores;
+        return (
+            <p>
+                <span className="md-intent-success">{correct} correct,</span>{" "}
+                <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped.{" "}
+                <a onClick={this.resetScores}>Reset</a>
+            </p>
         );
     };
 
@@ -396,9 +411,24 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         window.scrollTo(0, document.body.scrollHeight);
     };
 
+    private increaseScore = (type: keyof IScores) => {
+        const { scores } = this.state;
+        scores[type]++;
+        this.setScores(scores);
+    };
+
+    private resetScores = () => {
+        this.setScores({ correct: 0, wrong: 0, skipped: 0 });
+    };
+
     private setSelectedCases = (selectedCases: Set<number>) => {
         this.setState({ selectedCases });
         LOCAL_DATA_MANAGER.setSelectedCases(selectedCases);
+    };
+
+    private setScores = (scores: IScores) => {
+        this.setState({ scores });
+        LOCAL_DATA_MANAGER.setScores(scores);
     };
 
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
@@ -425,7 +455,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.setSelectedCases(new Set());
     };
 
-    private handleNewWordClick = () => {
+    private handleNewWordClick = (isSkipped: boolean) => {
         let word: ICurrentWord | undefined;
         const maxTries = 100;
         let numTries = 0;
@@ -435,15 +465,25 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         }
         const { word: initialGuess } = word === undefined ? { word: "" } : word;
         this.setState({ currentWord: word, currentGuess: initialGuess, isRevealed: false });
+        if (isSkipped) {
+            this.increaseScore("skipped");
+        }
     };
 
     private handleStartClick = () => {
-        this.handleNewWordClick();
+        this.handleNewWordClick(false);
         this.scrollToBottom();
+    };
+
+    private handleSkipClick = () => {
+        const { isRevealed } = this.state;
+        this.handleNewWordClick(!isRevealed);
     };
 
     private handleCheck = () => {
         this.setState({ isRevealed: true });
+        const isGuessCorrect = this.isGuessCorrect();
+        this.increaseScore(isGuessCorrect ? "correct" : "wrong");
     };
 
     private getHandlerIfEnter = (handler: () => void) => (event: React.KeyboardEvent<HTMLInputElement>) => {

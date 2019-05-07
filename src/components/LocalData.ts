@@ -1,13 +1,15 @@
 export interface ILocalData {
     version: 1;
-    stats: {
-        correct: number;
-        wrong: number;
-        skipped: number;
-    };
+    scores: IScores;
     settings: {
         selectedCases: number[];
     };
+}
+
+export interface IScores {
+    correct: number;
+    wrong: number;
+    skipped: number;
 }
 
 export class LocalData {
@@ -15,7 +17,7 @@ export class LocalData {
     private static CURRENT_VERSION = 1 as 1;
     private static DEFAULT_LOCAL_DATA: ILocalData = {
         version: LocalData.CURRENT_VERSION,
-        stats: {
+        scores: {
             correct: 0,
             wrong: 0,
             skipped: 0,
@@ -38,6 +40,14 @@ export class LocalData {
         this.localData = {
             ...this.localData,
             settings: { ...this.localData.settings, selectedCases: Array.from(selectedCases.values()) },
+        };
+        this.saveLocalData();
+    };
+
+    public setScores = (scores: IScores) => {
+        this.localData = {
+            ...this.localData,
+            scores,
         };
         this.saveLocalData();
     };
