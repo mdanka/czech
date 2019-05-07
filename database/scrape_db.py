@@ -16,6 +16,7 @@ WIKTIONARY_WORD_LIST_LETTERS = [u"A", u"B", u"C", u"Č", u"D", u"E", u"F", u"G",
 CASE_NAMES = [u"nominativ", u"genitiv", u"dativ", u"akuzativ", u"vokativ", u"lokál", u"instrumentál"]
 ERROR_NO_GENDER = list()
 ERROR_NO_7_CASES = list()
+ERROR_MULTIPLE_TABLES = list()
 
 def getPage(fullUrl):
     try:
@@ -75,6 +76,9 @@ def getCase(case):
         'plural': getCaseValue(case[1]) if len(case) >= 2 else []
     }
 
+def getTablesXPath():
+    return '//*[@id="mw-content-text"]/div/table'
+
 def getCaseXPath(caseName, indexString):
     return '//*[@id="mw-content-text"]/div/table[1]/tbody/tr[normalize-space(th/span/text()) = "' + caseName + '"]/td[' + indexString + ']/descendant-or-self::*/text()'
 
@@ -101,6 +105,11 @@ def getWordInformation(word):
         print(u"!!! No GENDER information for: " + word)
         ERROR_NO_GENDER.append(word)
         return None
+    tables = tree.xpath(getTablesXPath())
+    if len(tables) > 1:
+        print(u"!!! More than 1 TABLES for: " + word)
+        ERROR_MULTIPLE_TABLES.append(word)
+        # We don't return here, we will just pick the first table
     cases = list(map(lambda caseName: getCaseFromTree(tree, caseName), CASE_NAMES))
     casesFiltered = list(filter(lambda x: x != None, cases))
     if len(casesFiltered) < 7:
@@ -142,9 +151,7 @@ def getErrorString(title, errorList):
     return u"# {title}:\n\n{errorLines}\n\n".format(title = title, errorLines = errorLines)
 
 def writeErrorsToFile():
-    noGenderErrors = "\n".join(ERROR_NO_GENDER)
-    no7CasesErrors = "\n".join(ERROR_NO_7_CASES)
-    errorStrings = [getErrorString("No gender available", ERROR_NO_GENDER), getErrorString("No 7 cases found", ERROR_NO_7_CASES)]
+    errorStrings = [getErrorString("No gender available", ERROR_NO_GENDER), getErrorString("No 7 cases found", ERROR_NO_7_CASES), getErrorString("Multiple tables on the page", ERROR_MULTIPLE_TABLES)]
     errorText = "".join(errorStrings)
     writeStringToFile(r"errors.md", errorText)
 
