@@ -7,6 +7,7 @@ const webpack = require("webpack");
 const autoprefixer = require("autoprefixer");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const staticFileRegex = /\.(woff|svg|ttf|eot|gif|jpeg|jpg|png)([\?]?.*)$/;
 
@@ -112,7 +113,8 @@ module.exports = {
                     ];
                 }
             }
-        })
+        }),
+        new WorkboxPlugin.GenerateSW()
     ],
     optimization: {
         splitChunks: {
