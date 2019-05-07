@@ -498,20 +498,21 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private focusOnNextWordButton = () => {
-        console.log("FOCUS: focusOnNextWordButton");
         this.focusOnRef(this.practiceNextWordButtonRef);
     };
 
     private focusOnPracticeInput = () => {
-        console.log("FOCUS: focusOnPracticeInput");
         this.focusOnRef(this.practiceInputRef);
     };
 
     private focusOnRef = (refObject: React.RefObject<HTMLElement>) => {
-        console.log("FOCUS: focusOnRef");
         const element = refObject.current;
-        console.log(element);
-        element !== null && element.focus();
+        if (element === null) {
+            console.error(`Tried to focus on ref, but it was null.`);
+            console.error(refObject);
+            return;
+        }
+        element.focus();
     };
 
     private getRandomWord = (): ICurrentWord | undefined => {
