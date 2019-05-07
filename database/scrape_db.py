@@ -155,9 +155,9 @@ TEST_CASES = {
     # No gender
     "naplat": u'null',
     # Multiple declension tables (we pick the first one)
-    "haken": u'{}',
+    "haken": u'{"gender": "m", "isAnimated": true, "nominative": {"singular": ["haken"], "plural": ["hakeni", "hakenov\u00e9"]}, "genitive": {"singular": ["hakena"], "plural": ["haken\u016f"]}, "dative": {"singular": ["hakenu", "hakenovi"], "plural": ["haken\u016fm"]}, "accusative": {"singular": ["hakena"], "plural": ["hakeny"]}, "vocative": {"singular": ["hakene"], "plural": ["hakeni", "hakenov\u00e9"]}, "locative": {"singular": ["hakenovi", "hakenu"], "plural": ["hakenech"]}, "instrumental": {"singular": ["hakenem"], "plural": ["hakeny"]}}',
     # Multiple nouns tables (for now, we just take the first one)
-    "pahejl": u'{}'
+    "pahejl": u'{"gender": "m", "isAnimated": false, "nominative": {"singular": ["pahejl"], "plural": ["pahejly"]}, "genitive": {"singular": ["pahejlu"], "plural": ["pahejl\u016f"]}, "dative": {"singular": ["pahejlu"], "plural": ["pahejl\u016fm"]}, "accusative": {"singular": ["pahejl"], "plural": ["pahejly"]}, "vocative": {"singular": ["pahejle"], "plural": ["pahejly"]}, "locative": {"singular": ["pahejlu"], "plural": ["pahejlech"]}, "instrumental": {"singular": ["pahejlem"], "plural": ["pahejly", "pahejlama"]}}'
 }
 
 def checkEqual(expected, actual, word):
