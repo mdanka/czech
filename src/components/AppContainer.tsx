@@ -311,8 +311,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         return (
             <p>
                 <span className="md-intent-success">{correct} correct,</span>{" "}
-                <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped.{" "}
-                <a onClick={this.resetScores}>Reset</a>
+                <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped{" "}
+                - <a onClick={this.resetScores}>reset</a>
             </p>
         );
     };
