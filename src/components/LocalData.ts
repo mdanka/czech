@@ -58,7 +58,7 @@ export class LocalData {
 
     private loadLocalData = (): ILocalData => {
         const localDataString = window.localStorage.getItem(LocalData.KEY);
-        if (localDataString === null) {
+        if (localDataString == null) {
             return LocalData.DEFAULT_LOCAL_DATA;
         }
         const localDataJson = JSON.parse(localDataString);
