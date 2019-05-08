@@ -173,6 +173,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     private renderCaseCheckboxes = (caseNumber: number) => {
         const { selectedCases } = this.state;
+        const caseName = ALL_CASE_NAMES[caseNumber];
         return (
             <div key={caseNumber}>
                 <input
@@ -180,8 +181,9 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     checked={selectedCases.has(caseNumber)}
                     value={caseNumber}
                     onChange={this.getCaseClickHandler(caseNumber)}
+                    aria-label={caseName}
                 />{" "}
-                {ALL_CASE_NAMES[caseNumber]}
+                {caseName}
                 <br />
             </div>
         );
@@ -223,6 +225,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                         onChange={this.handleCurrentGuessChange}
                         onKeyPress={this.getHandlerIfEnter(this.handleCheck)}
                         ref={this.practiceInputRef}
+                        aria-label="Current guess"
                     />
                     <button
                         className="md-button md-right-space md-intent-primary"
