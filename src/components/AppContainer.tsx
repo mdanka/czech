@@ -141,7 +141,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {this.renderCreateGeneralIssueLink()}
                 <p>
                     App source on{" "}
-                    <a href="https://github.com/mdanka/czech" target="_blank">
+                    <a href="https://github.com/mdanka/czech" target="_blank" rel="noopener">
                         Github
                     </a>
                     .
@@ -283,7 +283,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         return (
             <p>
                 {question}{" "}
-                <a target="_blank" href={issueUrl}>
+                <a target="_blank" href={issueUrl} rel="noopener">
                     {callToAction}
                 </a>
             </p>
