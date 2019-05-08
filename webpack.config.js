@@ -8,6 +8,7 @@ const autoprefixer = require("autoprefixer");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest')
 
 const staticFileRegex = /\.(woff|svg|ttf|eot|gif|jpeg|jpg|png)([\?]?.*)$/;
 
@@ -138,7 +139,26 @@ module.exports = {
                 },
               },
             }],
-        })
+        }),
+        new WebpackPwaManifest({
+            name: "Czech Practice",
+            short_name: "Czech",
+            description: "Practise Czech grammar and declensions in an interactive app with over 50000 words",
+            background_color: '#ffffff',
+            theme_color: "#222222",
+            start_url: "/?utm_source=a2hs",
+            display: "standalone",
+            icons: [
+                {
+                    src: path.resolve("src/assets/favicon_512x512.png"),
+                    size: "512x512"
+                },
+                {
+                    src: path.resolve("src/assets/favicon_32x32.png"),
+                    size: "32x32"
+                }
+            ]
+          })        
     ],
     optimization: {
         splitChunks: {
