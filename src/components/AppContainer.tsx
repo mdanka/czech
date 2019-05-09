@@ -323,7 +323,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     private loadDatabase = async () => {
         const database = (await import(
-            /* webpackChunkName: "database_json" */ "../../database/words.json"
+            /* webpackChunkName: "database-words-json" */ "../../database/words.json"
         )) as IWordDatabase;
         const databaseNumberOfWords = Object.keys(database).length;
         const databaseNumberOfDeclensions = Object.keys(database)
