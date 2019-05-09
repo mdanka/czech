@@ -116,8 +116,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     public constructor(props: {}) {
         super(props);
-        const localData = LOCAL_DATA_MANAGER.getLocalData();
-        const { settings, scores } = localData;
+        const { settings, scores } = LocalData.DEFAULT_LOCAL_DATA;
         this.state = {
             currentWord: undefined,
             currentGuess: "",
@@ -125,6 +124,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             selectedCases: new Set(settings.selectedCases),
             scores,
         };
+        this.loadLocalData();
     }
 
     public render() {
@@ -322,6 +322,15 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 <a onClick={this.resetScores}>reset</a>
             </p>
         );
+    };
+
+    private loadLocalData = async () => {
+        const localData = await LOCAL_DATA_MANAGER.getLocalData();
+        const { settings, scores } = localData;
+        this.setState({
+            selectedCases: new Set(settings.selectedCases),
+            scores,
+        });
     };
 
     private generateGenderString = (gender: IGender | null, isAnimated: boolean) => {
