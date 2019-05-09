@@ -1,6 +1,5 @@
 import * as React from "react";
 import { LocalData, IScores } from "./LocalData";
-import * as DATABASE_JSON from "../../database/words.json";
 
 interface ICase {
     singular: string[];
@@ -66,29 +65,6 @@ const CASE_PREPOSITIONS = [
 
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
-const DATABASE = DATABASE_JSON as IWordDatabase;
-const NUMBER_OF_WORDS = Object.keys(DATABASE).length;
-const NUMBER_OF_DECLENSIONS = Object.keys(DATABASE)
-    .map(word => {
-        const wordInfo = DATABASE[word];
-        if (wordInfo == null) {
-            return 0;
-        }
-        const { nominative, genitive, dative, accusative, vocative, locative, instrumental } = wordInfo;
-        return [nominative, genitive, dative, accusative, vocative, locative, instrumental]
-            .map(
-                (wordCase): number => {
-                    if (wordCase == null) {
-                        return 0;
-                    }
-                    const { singular, plural } = wordCase;
-                    return singular.length + plural.length;
-                },
-            )
-            .reduce(SUM_REDUCER, 0);
-    })
-    .reduce(SUM_REDUCER, 0);
-
 interface IAppState {
     currentWord: ICurrentWord | undefined;
     currentGuess: string;
@@ -99,6 +75,9 @@ interface IAppState {
      */
     selectedCases: Set<number>;
     scores: IScores;
+    database: IWordDatabase | undefined;
+    databaseNumberOfWords: number | undefined;
+    databaseNumberOfDeclensions: number | undefined;
 }
 
 interface ICurrentWord {
@@ -122,20 +101,30 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             isRevealed: false,
             selectedCases: new Set(settings.selectedCases),
             scores,
+            database: undefined,
+            databaseNumberOfWords: undefined,
+            databaseNumberOfDeclensions: undefined,
         };
         this.loadLocalData();
+        this.loadDatabase();
     }
 
     public render() {
-        const { currentWord } = this.state;
+        const { currentWord, databaseNumberOfWords, databaseNumberOfDeclensions } = this.state;
         const isPlayInProgress = currentWord !== undefined;
         return (
             <div className="app">
                 <h1>Czech Practice</h1>
                 <p className="md-running-text">
                     Practise Czech grammar and declensions in this interactive app with{" "}
-                    <span className="md-strong">{NUMBER_OF_WORDS} words</span> and{" "}
-                    <span className="md-strong">{NUMBER_OF_DECLENSIONS} declensions</span>.
+                    <span className="md-strong">
+                        {databaseNumberOfWords === undefined ? "" : databaseNumberOfWords} words
+                    </span>{" "}
+                    and{" "}
+                    <span className="md-strong">
+                        {databaseNumberOfDeclensions === undefined ? "" : databaseNumberOfDeclensions} declensions
+                    </span>
+                    .
                 </p>
                 {this.renderCreateGeneralIssueLink()}
                 <p>
@@ -329,6 +318,38 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.setState({
             selectedCases: new Set(settings.selectedCases),
             scores,
+        });
+    };
+
+    private loadDatabase = async () => {
+        const database = (await import(
+            /* webpackChunkName: "database-words-json" */ "../../database/words.json"
+        )) as IWordDatabase;
+        const databaseNumberOfWords = Object.keys(database).length;
+        const databaseNumberOfDeclensions = Object.keys(database)
+            .map(word => {
+                const wordInfo = database[word];
+                if (wordInfo == null) {
+                    return 0;
+                }
+                const { nominative, genitive, dative, accusative, vocative, locative, instrumental } = wordInfo;
+                return [nominative, genitive, dative, accusative, vocative, locative, instrumental]
+                    .map(
+                        (wordCase): number => {
+                            if (wordCase == null) {
+                                return 0;
+                            }
+                            const { singular, plural } = wordCase;
+                            return singular.length + plural.length;
+                        },
+                    )
+                    .reduce(SUM_REDUCER, 0);
+            })
+            .reduce(SUM_REDUCER, 0);
+        this.setState({
+            database,
+            databaseNumberOfWords,
+            databaseNumberOfDeclensions,
         });
     };
 
@@ -527,13 +548,16 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private getRandomWord = (): ICurrentWord | undefined => {
-        const { selectedCases } = this.state;
-        const words = Object.keys(DATABASE);
+        const { selectedCases, database } = this.state;
+        if (database === undefined) {
+            return;
+        }
+        const words = Object.keys(database);
         const word = this.selectRandom(words);
         if (word === undefined) {
             return;
         }
-        const info = DATABASE[word];
+        const info = database[word];
         if (info == null) {
             return;
         }

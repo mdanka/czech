@@ -9,7 +9,7 @@
             "es5",
             "scripthost"
         ],
-        "module": "commonjs",
+        "module": "esnext",
         "moduleResolution": "node",
         "noEmitHelpers": false,
         "noImplicitAny": true,
