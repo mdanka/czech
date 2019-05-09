@@ -66,8 +66,6 @@ const CASE_PREPOSITIONS = [
 
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
-const LOCAL_DATA_MANAGER = new LocalData();
-
 const DATABASE = DATABASE_JSON as IWordDatabase;
 const NUMBER_OF_WORDS = Object.keys(DATABASE).length;
 const NUMBER_OF_DECLENSIONS = Object.keys(DATABASE)
@@ -111,6 +109,7 @@ interface ICurrentWord {
 }
 
 export class AppContainer extends React.PureComponent<{}, IAppState> {
+    private localDataManager = new LocalData();
     private practiceInputRef = React.createRef<HTMLInputElement>();
     private practiceNextWordButtonRef = React.createRef<HTMLButtonElement>();
 
@@ -325,7 +324,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private loadLocalData = async () => {
-        const localData = await LOCAL_DATA_MANAGER.getLocalData();
+        const localData = await this.localDataManager.getLocalData();
         const { settings, scores } = localData;
         this.setState({
             selectedCases: new Set(settings.selectedCases),
@@ -439,12 +438,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
 
     private setSelectedCases = (selectedCases: Set<number>) => {
         this.setState({ selectedCases });
-        LOCAL_DATA_MANAGER.setSelectedCases(selectedCases);
+        this.localDataManager.setSelectedCases(selectedCases);
     };
 
     private setScores = (scores: IScores) => {
         this.setState({ scores });
-        LOCAL_DATA_MANAGER.setScores(scores);
+        this.localDataManager.setScores(scores);
     };
 
     private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
