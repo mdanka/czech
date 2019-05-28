@@ -290,10 +290,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
-    private renderSolutionParts = (solutionParts: ISolutionParts) => {
+    private renderSolutionParts = (solutionParts: ISolutionParts, index: number) => {
         const { beginning, ending } = solutionParts;
         return (
             <span key={beginning + ending}>
+                {index > 0 ? " " : ""}
                 {beginning}
                 <span className="md-strong">{ending}</span>
             </span>
