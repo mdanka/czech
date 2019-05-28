@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from lxml import html
+import argparse
 import requests
 import sys
 import urllib3
@@ -17,6 +18,7 @@ CASE_NAMES = [u"nominativ", u"genitiv", u"dativ", u"akuzativ", u"vokativ", u"lok
 ERROR_NO_GENDER = list()
 ERROR_NO_7_CASES = list()
 ERROR_MULTIPLE_TABLES = list()
+DATA_FILE_NAME = r"words.json"
 
 def getPage(fullUrl):
     try:
@@ -129,10 +131,26 @@ def getWordInformation(word):
         'instrumental': getCase(casesFiltered[6]),
     }
 
-def getAllWordInformation(isTestMode):
-    allWords = ["absolvent"] if isTestMode else getAllWords()
+def getAllWordInformation(isTestMode, wordsToUpdate):
+    if isTestMode:
+        allWords = ["absolvent"]
+    elif wordsToUpdate != None:
+        allWords = wordsToUpdate
+    else:
+        allWords = getAllWords()
     wordMap = {word:getWordInformation(word) for word in allWords}
     return wordMap
+
+def mergeDatabases(existingWordInformation, newWordInforation):
+    for key, value in newWordInforation.items():
+        existingWordInformation[key] = value
+    return existingWordInformation
+
+def readStringFromFile(filename):
+    myFile = open(filename, "r", encoding='utf-8')
+    string = myFile.read()
+    myFile.close()
+    return string
 
 def writeStringToFile(filename, string):
     myFile = open(filename, "w", encoding='utf-8')
@@ -196,23 +214,38 @@ def test():
     return all(results)
 
 def main():
-    isTestMode = len(sys.argv) > 1
+    parser = argparse.ArgumentParser(description='Create a word database by scraping Wiktionary.')
+    parser.add_argument("--updateWords", metavar="<word>", nargs="+",
+                    help="instead of the default full list generation just updates the provided list of words")
+    parser.add_argument("--test", action="store_true", help="run in test mode (outputting just a single word)")
+    args = parser.parse_args()
+    isTestMode = args.test
+    wordsToUpdate = args.updateWords
+    isUpdate = wordsToUpdate != None
+
     if isTestMode:
         print("~~~~~~~~~~~~~~~~~")
         print("~~~ TEST MODE ~~~")
         print("~~~~~~~~~~~~~~~~~")
-    # Unit tests
+    # Unit tests (always run them)
     testResult = test()
     if not testResult:
         print("TESTS FAILED. Quitting...")
         sys.exit()
-    allWordInformation = getAllWordInformation(isTestMode)
-    allWordInformationJson = json.dumps(allWordInformation)
+    newWordInformation = getAllWordInformation(isTestMode, wordsToUpdate)
+    if isUpdate:
+        inputJson = readStringFromFile(DATA_FILE_NAME)
+        existingWordInformation = json.loads(inputJson)
+        updatedWordInformation = mergeDatabases(existingWordInformation, newWordInformation)
+        outputJson = json.dumps(updatedWordInformation)
+    else:
+        outputJson = json.dumps(newWordInformation)
     print("### Persisting to files...")
     # Persist words
-    writeStringToFile(r"words.json", allWordInformationJson)
+    writeStringToFile(DATA_FILE_NAME, outputJson)
     # Persist errors
-    writeErrorsToFile()
+    if not isUpdate:
+        writeErrorsToFile()
     print("Done.")
 
 if __name__ == "__main__":
