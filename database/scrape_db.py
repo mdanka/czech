@@ -146,6 +146,11 @@ def mergeDatabases(existingWordInformation, newWordInforation):
         existingWordInformation[key] = value
     return existingWordInformation
 
+def removeWordsFromDatabase(updatedWordInformation, wordsToDelete):
+    for word in wordsToDelete:
+        updatedWordInformation.pop(word, None)
+    return updatedWordInformation
+
 def readStringFromFile(filename):
     myFile = open(filename, "r", encoding='utf-8')
     string = myFile.read()
@@ -217,11 +222,16 @@ def main():
     parser = argparse.ArgumentParser(description='Create a word database by scraping Wiktionary.')
     parser.add_argument("--updateWords", metavar="<word>", nargs="+",
                     help="instead of the default full list generation just updates the provided list of words")
+    parser.add_argument("--deleteWords", metavar="<word>", nargs="+",
+                    help="instead of the default full list generation just deleted the provided list of words")
     parser.add_argument("--test", action="store_true", help="run in test mode (outputting just a single word)")
     args = parser.parse_args()
     isTestMode = args.test
     wordsToUpdate = args.updateWords
     isUpdate = wordsToUpdate != None
+    wordsToDelete = args.deleteWords
+    isDelete = wordsToDelete != None
+    isFullFetch = not isUpdate and not isDelete
 
     if isTestMode:
         print("~~~~~~~~~~~~~~~~~")
@@ -232,19 +242,24 @@ def main():
     if not testResult:
         print("TESTS FAILED. Quitting...")
         sys.exit()
-    newWordInformation = getAllWordInformation(isTestMode, wordsToUpdate)
-    if isUpdate:
-        inputJson = readStringFromFile(DATA_FILE_NAME)
-        existingWordInformation = json.loads(inputJson)
-        updatedWordInformation = mergeDatabases(existingWordInformation, newWordInformation)
-        outputJson = json.dumps(updatedWordInformation)
-    else:
+    if isFullFetch:
+        newWordInformation = getAllWordInformation(isTestMode, wordsToUpdate)
         outputJson = json.dumps(newWordInformation)
+    else:
+        inputJson = readStringFromFile(DATA_FILE_NAME)
+        updatedWordInformation = json.loads(inputJson)
+        if isUpdate:
+            newWordInformation = getAllWordInformation(isTestMode, wordsToUpdate)
+            updatedWordInformation = mergeDatabases(updatedWordInformation, newWordInformation)
+        if isDelete:
+            updatedWordInformation = removeWordsFromDatabase(updatedWordInformation, wordsToDelete)
+        outputJson = json.dumps(updatedWordInformation)
+        
     print("### Persisting to files...")
     # Persist words
     writeStringToFile(DATA_FILE_NAME, outputJson)
     # Persist errors
-    if not isUpdate:
+    if isFullFetch:
         writeErrorsToFile()
     print("Done.")
 
