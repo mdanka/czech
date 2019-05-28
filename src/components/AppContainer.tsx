@@ -191,7 +191,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         ) : (
             <span className="md-strong md-intent-danger">✗ Incorrect</span>
         );
-        const solutionsPartsList = this.getSolutionsParts(word, solutions);
+        const solutionsPartsList = this.getSolutionsWordParts(word, solutions);
         const casePreposition = CASE_PREPOSITIONS[caseNumber];
         const caseName = ALL_CASE_NAMES[caseNumber];
         return (
@@ -396,7 +396,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     /**
      * Finds suffix differences for each solution.
      */
-    private getSolutionsParts = (original: string, solutions: string[]): ISolutionWordParts[][] => {
+    private getSolutionsWordParts = (original: string, solutions: string[]): ISolutionWordParts[][] => {
         return solutions.map(solution => this.getSolutionWordParts(original, solution));
     };
 
@@ -498,7 +498,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const maxTries = 100;
         let numTries = 0;
         while (word === undefined && numTries < maxTries) {
-            word = this.getRandomWord();
+            word = this.getRandomPuzzle();
             numTries++;
         }
         const { word: initialGuess } = word === undefined ? { word: "" } : word;
@@ -552,7 +552,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         element.focus();
     };
 
-    private getRandomWord = (): ICurrentPuzzle | undefined => {
+    private getRandomPuzzle = (): ICurrentPuzzle | undefined => {
         const { selectedCases, database } = this.state;
         if (database === undefined) {
             return;
