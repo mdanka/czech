@@ -1,5 +1,5 @@
 set -eux
 
 pipenv shell
-python scrape_db.py
+python scrape_db.py "$@"
 
