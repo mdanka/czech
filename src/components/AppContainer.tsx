@@ -66,7 +66,7 @@ const CASE_PREPOSITIONS = [
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
 interface IAppState {
-    currentWord: ICurrentWord | undefined;
+    currentPuzzle: ICurrentPuzzle | undefined;
     currentGuess: string;
     isRevealed: boolean;
     /**
@@ -80,7 +80,7 @@ interface IAppState {
     databaseNumberOfDeclensions: number | undefined;
 }
 
-interface ICurrentWord {
+interface ICurrentPuzzle {
     word: string;
     info: IWordInformation;
     caseNumber: number;
@@ -96,7 +96,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         super(props);
         const { settings, scores } = LocalData.DEFAULT_LOCAL_DATA;
         this.state = {
-            currentWord: undefined,
+            currentPuzzle: undefined,
             currentGuess: "",
             isRevealed: false,
             selectedCases: new Set(settings.selectedCases),
@@ -110,8 +110,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     }
 
     public render() {
-        const { currentWord, databaseNumberOfWords, databaseNumberOfDeclensions } = this.state;
-        const isPlayInProgress = currentWord !== undefined;
+        const { currentPuzzle, databaseNumberOfWords, databaseNumberOfDeclensions } = this.state;
+        const isPlayInProgress = currentPuzzle !== undefined;
         return (
             <div className="app">
                 <h1>Czech Practice</h1>
@@ -153,7 +153,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                             </button>
                         </p>
                     )}
-                    {this.renderCurrentWord()}
+                    {this.renderCurrentPuzzle()}
                 </div>
             </div>
         );
@@ -177,12 +177,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
-    private renderCurrentWord = () => {
-        const { currentWord, currentGuess, isRevealed } = this.state;
-        if (currentWord == null) {
+    private renderCurrentPuzzle = () => {
+        const { currentPuzzle, currentGuess, isRevealed } = this.state;
+        if (currentPuzzle == null) {
             return null;
         }
-        const { word, solutions, caseNumber, info } = currentWord;
+        const { word, solutions, caseNumber, info } = currentPuzzle;
         const { gender, isAnimated } = info;
         const genderString = this.generateGenderString(gender, isAnimated);
         const isCorrect = this.isGuessCorrect();
@@ -246,11 +246,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private renderCreateWordIssueLink = () => {
-        const { currentWord } = this.state;
-        if (currentWord === undefined) {
+        const { currentPuzzle } = this.state;
+        if (currentPuzzle === undefined) {
             return null;
         }
-        const { word, info, solutions, caseNumber } = currentWord;
+        const { word, info, solutions, caseNumber } = currentPuzzle;
         const caseName = ALL_CASE_NAMES[caseNumber];
         const { gender, isAnimated } = info;
         const wiktionaryUrl = this.getWiktionaryUrl(word);
@@ -379,12 +379,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private isGuessCorrect = () => {
-        const { currentWord, currentGuess } = this.state;
-        if (currentWord == null) {
+        const { currentPuzzle, currentGuess } = this.state;
+        if (currentPuzzle == null) {
             return false;
         }
         const normalizedGuess = this.normalizeString(currentGuess);
-        const { solutions } = currentWord;
+        const { solutions } = currentPuzzle;
         const normalizedSolutions = solutions.map(this.normalizeString);
         return normalizedSolutions.indexOf(normalizedGuess) !== -1;
     };
@@ -494,7 +494,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private handleNewWordClick = (isSkipped: boolean) => {
-        let word: ICurrentWord | undefined;
+        let word: ICurrentPuzzle | undefined;
         const maxTries = 100;
         let numTries = 0;
         while (word === undefined && numTries < maxTries) {
@@ -502,7 +502,10 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             numTries++;
         }
         const { word: initialGuess } = word === undefined ? { word: "" } : word;
-        this.setState({ currentWord: word, currentGuess: initialGuess, isRevealed: false }, this.focusOnPracticeInput);
+        this.setState(
+            { currentPuzzle: word, currentGuess: initialGuess, isRevealed: false },
+            this.focusOnPracticeInput,
+        );
         if (isSkipped) {
             this.increaseScore("skipped");
         }
@@ -549,7 +552,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         element.focus();
     };
 
-    private getRandomWord = (): ICurrentWord | undefined => {
+    private getRandomWord = (): ICurrentPuzzle | undefined => {
         const { selectedCases, database } = this.state;
         if (database === undefined) {
             return;
