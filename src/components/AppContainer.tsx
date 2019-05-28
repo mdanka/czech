@@ -132,6 +132,10 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                     <a href="https://github.com/mdanka/czech" target="_blank" rel="noopener">
                         Github
                     </a>
+                    . See my{" "}
+                    <a href="https://miklosdanka.com" target="_blank" rel="noopener">
+                        other projects
+                    </a>
                     .
                 </p>
                 <h3>Choose cases to practise</h3>
