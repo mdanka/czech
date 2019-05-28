@@ -20,7 +20,7 @@ interface IWordInformation {
     instrumental: ICase | null;
 }
 
-interface ISolutionParts {
+interface ISolutionWordParts {
     beginning: string;
     ending: string;
 }
@@ -282,17 +282,17 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
-    private renderSolutionsParts = (solutionsParts: ISolutionParts[], index: number) => {
+    private renderSolutionsParts = (solutionsParts: ISolutionWordParts[], index: number) => {
         return (
             <span key={JSON.stringify(solutionsParts)}>
                 {index > 0 ? " / " : ""}
-                {solutionsParts.map(this.renderSolutionParts)}
+                {solutionsParts.map(this.renderSolutionWordParts)}
             </span>
         );
     };
 
-    private renderSolutionParts = (solutionParts: ISolutionParts, index: number) => {
-        const { beginning, ending } = solutionParts;
+    private renderSolutionWordParts = (solutionWordParts: ISolutionWordParts, index: number) => {
+        const { beginning, ending } = solutionWordParts;
         return (
             <span key={beginning + ending}>
                 {index > 0 ? " " : ""}
@@ -396,15 +396,15 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     /**
      * Finds suffix differences for each solution.
      */
-    private getSolutionsParts = (original: string, solutions: string[]): ISolutionParts[][] => {
-        return solutions.map(solution => this.getSolutionParts(original, solution));
+    private getSolutionsParts = (original: string, solutions: string[]): ISolutionWordParts[][] => {
+        return solutions.map(solution => this.getSolutionWordParts(original, solution));
     };
 
     /**
      * Find where the end of the solution word is different from the original
      * for each word in the given string.
      */
-    private getSolutionParts = (original: string, solution: string): ISolutionParts[] => {
+    private getSolutionWordParts = (original: string, solution: string): ISolutionWordParts[] => {
         const originalWords = original.split(" ").map(value => value.trim());
         const solutionWords = solution.split(" ").map(value => value.trim());
         if (originalWords.length !== solutionWords.length) {
@@ -412,14 +412,14 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         }
         return originalWords.map((originalWord, index) => {
             const solutionWord = solutionWords[index];
-            return this.getSolutionPartsForWord(originalWord, solutionWord);
+            return this.getSolutionWordPartsForWord(originalWord, solutionWord);
         });
     };
 
     /**
      * Find where the end of the solution word is different from the original.
      */
-    private getSolutionPartsForWord = (original: string, solution: string): ISolutionParts => {
+    private getSolutionWordPartsForWord = (original: string, solution: string): ISolutionWordParts => {
         let differenceStartIndex = 0;
         let isSubset = false;
         while (differenceStartIndex < original.length) {
