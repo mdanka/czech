@@ -253,11 +253,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const { word, info, solutions, caseNumber } = currentWord;
         const caseName = ALL_CASE_NAMES[caseNumber];
         const { gender, isAnimated } = info;
+        const wiktionaryUrl = this.getWiktionaryUrl(word);
         const genderString = this.generateGenderString(gender, isAnimated);
         const question = "Do you disagree with this answer?";
         const callToAction = "Click here to report an incorrect declension.";
         const issueTitle = `Wrong solution for "${word}"`;
-        const issueBody = `The word \`${word} (${genderString})\` in the case \`${caseName}\` is specified as \`${solutions.join(
+        const issueBody = `The word [${word}](${wiktionaryUrl}) \`(${genderString})\` in the case \`${caseName}\` is specified as \`${solutions.join(
             ", ",
         )}\`, but I think it is incorrect because... <fill in why>`;
         return this.renderCreateIssueLink(question, callToAction, issueTitle, issueBody, "word");
@@ -611,5 +612,9 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     private caseToString = (caseObject: ICase | null, isSingular: boolean) => {
         const caseStringOrNull = caseObject == null ? null : isSingular ? caseObject.singular : caseObject.plural;
         return caseStringOrNull == null ? [] : caseStringOrNull;
+    };
+
+    private getWiktionaryUrl = (word: string) => {
+        return `https://cs.wiktionary.org/wiki/${word}`;
     };
 }
