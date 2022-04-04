@@ -13,6 +13,7 @@ export interface ILocalDataV1 {
     scores: IScores;
     settings: {
         selectedCases: number[];
+        selectedGenders: number[];
     };
 }
 
@@ -31,6 +32,7 @@ export class LocalData {
         },
         settings: {
             selectedCases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            selectedGenders: [0, 1, 2, 3],
         },
     };
 
@@ -59,6 +61,16 @@ export class LocalData {
         const newLocalData = {
             ...localData,
             settings: { ...localData.settings, selectedCases: Array.from(selectedCases.values()) },
+        };
+        this.localDataPromise = Promise.resolve(newLocalData);
+        return this.saveLocalData();
+    };
+
+    public setSelectedGenders = async (selectedGenders: Set<number>) => {
+        const localData = await this.localDataPromise;
+        const newLocalData = {
+            ...localData,
+            settings: { ...localData.settings, selectedGenders: Array.from(selectedGenders.values()) },
         };
         this.localDataPromise = Promise.resolve(newLocalData);
         return this.saveLocalData();

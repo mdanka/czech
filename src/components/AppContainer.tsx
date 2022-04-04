@@ -63,6 +63,8 @@ const CASE_PREPOSITIONS = [
     "s/se",
 ];
 
+const SELECTABLE_GENDERS = ["Masculine - animate", "Masculine - inanimate", "Feminine", "Neuter"]
+const SELECTABLE_GENDER_CONDITIONS = [{gender: "m", isAnimated: true}, {gender: "m", isAnimated: false}, {gender: "f"}, {gender: "n"}]
 const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
 interface IAppState {
@@ -74,6 +76,7 @@ interface IAppState {
      * 8-14 refers to each of the plural cases.
      */
     selectedCases: Set<number>;
+    selectedGenders: Set<number>;
     scores: IScores;
     database: IWordDatabase | undefined;
     databaseNumberOfWords: number | undefined;
@@ -100,6 +103,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
             currentGuess: "",
             isRevealed: false,
             selectedCases: new Set(settings.selectedCases),
+            selectedGenders: new Set(settings.selectedGenders),
             scores,
             database: undefined,
             databaseNumberOfWords: undefined,
@@ -140,14 +144,24 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 </p>
                 <h3>Choose cases to practise</h3>
                 <p className="md-running-text md-button-group">
-                    <button className="md-button" onClick={this.handleSelectAllClick}>
+                    <button className="md-button" onClick={this.handleSelectAllCasesClick}>
                         Select all
                     </button>
-                    <button className="md-button" onClick={this.handleDeselectAllClick}>
+                    <button className="md-button" onClick={this.handleDeselectAllCasesClick}>
                         Deselect all
                     </button>
                 </p>
                 <div className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(this.renderCaseCheckboxes)}</div>
+                <h3>Choose genders to practise</h3>
+                <p className="md-running-text md-button-group">
+                    <button className="md-button" onClick={this.handleSelectAllGendersClick}>
+                        Select all
+                    </button>
+                    <button className="md-button" onClick={this.handleDeselectAllGendersClick}>
+                        Deselect all
+                    </button>
+                </p>
+                <div className="md-running-text">{SELECTABLE_GENDERS.map(this.renderGenderCheckboxes)}</div>
                 <h3>Practise</h3>
                 <div className="czech-practice-container">
                     {!isPlayInProgress && (
@@ -181,6 +195,23 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         );
     };
 
+    private renderGenderCheckboxes = (genderLabel: string) => {
+        const { selectedGenders } = this.state;
+        const genderNumber = SELECTABLE_GENDERS.indexOf(genderLabel)
+        return (
+            <div key={genderLabel}>
+                <input
+                    type="checkbox"
+                    checked={selectedGenders.has(genderNumber)}
+                    value={genderNumber}
+                    onChange={this.getGenderClickHandler(genderNumber)}
+                    aria-label={genderLabel}
+                />{" "}
+                {genderLabel}
+                <br />
+            </div>
+        );
+    };
     private renderCurrentPuzzle = () => {
         const { currentPuzzle, currentGuess, isRevealed } = this.state;
         if (currentPuzzle == null) {
@@ -323,6 +354,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         const { settings, scores } = localData;
         this.setState({
             selectedCases: new Set(settings.selectedCases),
+            selectedGenders: new Set(settings.selectedGenders),
             scores,
         });
     };
@@ -468,6 +500,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.localDataManager.setSelectedCases(selectedCases);
     };
 
+     private setSelectedGenders = (selectedGenders: Set<number>) => {
+        this.setState({ selectedGenders });
+        this.localDataManager.setSelectedGenders(selectedGenders);
+    };
+
     private setScores = (scores: IScores) => {
         this.setState({ scores });
         this.localDataManager.setScores(scores);
@@ -489,12 +526,31 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.setSelectedCases(newSelectedCases);
     };
 
-    private handleSelectAllClick = () => {
+    private getGenderClickHandler = (genderNumber: number) => () => {
+        const { selectedGenders } = this.state;
+        if (selectedGenders.has(genderNumber)) {
+            selectedGenders.delete(genderNumber);
+        } else {
+            selectedGenders.add(genderNumber);
+        }
+        const newSelectedGenders = new Set(selectedGenders);
+        this.setSelectedGenders(newSelectedGenders);
+    };
+
+    private handleSelectAllCasesClick = () => {
         this.setSelectedCases(new Set(SELECTABLE_CASE_NUMBERS.slice()));
     };
 
-    private handleDeselectAllClick = () => {
+    private handleDeselectAllCasesClick = () => {
         this.setSelectedCases(new Set());
+    };
+
+    private handleSelectAllGendersClick = () => {
+        this.setSelectedGenders(new Set([0,1,2,3].slice()));
+    };
+
+    private handleDeselectAllGendersClick = () => {
+        this.setSelectedGenders(new Set());
     };
 
     private handleNewWordClick = (isSkipped: boolean) => {
@@ -557,12 +613,12 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
     };
 
     private getRandomPuzzle = (): ICurrentPuzzle | undefined => {
-        const { selectedCases, database } = this.state;
+        const { selectedCases, selectedGenders, database } = this.state;
         if (database === undefined) {
             return;
         }
         const words = Object.keys(database);
-        const word = this.selectRandom(words);
+        const word = selectedGenders.size === 4 ? this.selectRandom(words): this.selectGenderRestrictedWord(words, database, selectedGenders);
         if (word === undefined) {
             return;
         }
@@ -593,6 +649,30 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         }
         const index = Math.floor(Math.random() * list.length);
         return list[index];
+    }
+
+    private selectGenderRestrictedWord<T extends {}>(list: T[], database : IWordDatabase, selectedGenders: Set<number>): T | undefined {
+        if (list.length === 0) {
+            return undefined;
+        }
+        // Could possibly filter based on the gender conditions, but this avoids having to do extra work.
+        var attempts = 100;
+        while(attempts > 0){
+            attempts--;
+            const index = Math.floor(Math.random() * list.length);
+            const info = database[list[index].toString()];
+            // check if the word matches at least one of the selected gender criteria.
+            for(var i of Array.from(selectedGenders)){
+                const condition = SELECTABLE_GENDER_CONDITIONS[i]
+                if(condition != null && info != null && info.gender === condition.gender){
+                    if(info.gender === "m" && info.isAnimated !== condition.isAnimated){
+                        continue
+                    }
+                    return list[index];
+                }
+            }
+        }
+        return undefined
     }
 
     private wordInfoToCaseList = (info: IWordInformation) => {
