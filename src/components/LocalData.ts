@@ -81,17 +81,17 @@ export class LocalData {
         }
         const db = await this.dbPromise;
         const localData = await this.localDataPromise;
-        return db.put(OBJECT_STORE_NAME, localData, LocalData.KEY);
+        return db.put<typeof OBJECT_STORE_NAME>(OBJECT_STORE_NAME, localData, LocalData.KEY);
     };
 
     private loadLocalData = async (): Promise<ILocalDataV1> => {
         this.dbPromise = openDB<CzechDb>(LocalData.DB_NAME, LocalData.CURRENT_VERSION, {
             upgrade: db => {
-                db.createObjectStore(OBJECT_STORE_NAME);
+                db.createObjectStore<typeof OBJECT_STORE_NAME>(OBJECT_STORE_NAME);
             },
         });
         const db = await this.dbPromise;
-        const localData = await db.get(OBJECT_STORE_NAME, LocalData.KEY);
-        return localData === undefined ? LocalData.DEFAULT_LOCAL_DATA : localData;
+        const localData = await db.get<typeof OBJECT_STORE_NAME>(OBJECT_STORE_NAME, LocalData.KEY);
+        return localData == null ? LocalData.DEFAULT_LOCAL_DATA : localData;
     };
 }
