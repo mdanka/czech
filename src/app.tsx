@@ -1,7 +1,7 @@
-import "es6-shim";
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { AppContainer } from "./components/AppContainer";
+import "./app.scss";
 
 const appElement = document.getElementById("app");
 

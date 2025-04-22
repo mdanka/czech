@@ -5,37 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#222222"/>
   <meta name="Description" content="Practise Czech grammar and declensions in an interactive app with over 50000 words">
+  <!-- TODO: Update OG image path if needed -->
   <meta property="og:description" content="Practise Czech grammar and declensions in an interactive app with over 50000 words" />
-  <meta property="og:image" content="https://czech.miklosdanka.com${require('./assets/fb-share.png')}" />
+  <meta property="og:image" content="/fb-share.png" /> 
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://czech.miklosdanka.com/" />
+  <meta property="og:url" content="/" /> <!-- Assuming relative URL for now -->
   <meta property="og:title" content="Czech Practice" />
   <title>Czech Practice</title>
-  <script>
-    // Check that service workers are registered
-    if ('serviceWorker' in navigator) {
-      // Use the window load event to keep the page load performant
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js');
-      });
-    }
-  </script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+  
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-62449435-7"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'UA-62449435-7');
   </script>
-  <link rel="icon" type="image/png" href="${require('./assets/favicon_512x512.png')}" sizes="512x512">
-  <link rel="icon" type="image/png" href="${require('./assets/favicon_32x32.png')}" sizes="32x32">
+
+  <!-- Favicons - Assuming they will be in /public -->
+  <link rel="icon" type="image/png" href="/favicon_512x512.png" sizes="512x512">
+  <link rel="icon" type="image/png" href="/favicon_32x32.png" sizes="32x32">
 </head>
 <body>
   <div id="app"></div>
   <noscript>
     JavaScript is required for this app.
   </noscript>
+  <!-- Vite entry point -->
+  <script type="module" src="/src/app.tsx"></script>
 </body>
-</html>
+</html> 
