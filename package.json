@@ -16,7 +16,7 @@
     "bundle:prod": "webpack --config webpack.config.js",
     "createBuildDir": "mkdirp dist",
     "watch:bundle": "webpack -d -w",
-    "watch:server": "webpack-dev-server -d --config webpack.config.server.js"
+    "watch:server": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server -d --config webpack.config.server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.4",
@@ -54,13 +54,13 @@
     "json-loader": "^0.5.7",
     "mkdirp": "^0.5.1",
     "ncp": "^2.0.0",
-    "node-sass": "^4.9.3",
     "npm-run-all": "^3.1.2",
     "prettier": "^1.14.2",
     "react-hot-loader": "^4.3.11",
     "resolve-url-loader": "^3.0.0",
     "rimraf": "^2.5.4",
     "sass-loader": "^7.1.0",
+    "sass": "^1.70.0",
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.0",
     "ts-loader": "^5.3.3",
