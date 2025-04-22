@@ -36,7 +36,7 @@ export class LocalData {
 
     private static DB_NAME = "CZECH_APP_DB";
     private static KEY = "CZECH_APP_LOCAL_DATA";
-    private static CURRENT_VERSION = 1 as 1;
+    private static CURRENT_VERSION = 1 as const;
 
     private dbPromise: Promise<IDBPDatabase<CzechDb>> | undefined;
     private localDataPromise: Promise<ILocalDataV1>;

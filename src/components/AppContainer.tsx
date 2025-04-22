@@ -87,12 +87,12 @@ interface ICurrentPuzzle {
     solutions: string[];
 }
 
-export class AppContainer extends React.PureComponent<{}, IAppState> {
+export class AppContainer extends React.PureComponent<Record<string, never>, IAppState> {
     private localDataManager = new LocalData();
     private practiceInputRef = React.createRef<HTMLInputElement>();
     private practiceNextWordButtonRef = React.createRef<HTMLButtonElement>();
 
-    public constructor(props: {}) {
+    public constructor(props: Record<string, never>) {
         super(props);
         const { settings, scores } = LocalData.DEFAULT_LOCAL_DATA;
         this.state = {
@@ -129,11 +129,11 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {this.renderCreateGeneralIssueLink()}
                 <p>
                     App source on{" "}
-                    <a href="https://github.com/mdanka/czech" target="_blank" rel="noopener">
+                    <a href="https://github.com/mdanka/czech" target="_blank" rel="noopener noreferrer">
                         Github
                     </a>
                     . See my{" "}
-                    <a href="https://miklosdanka.com" target="_blank" rel="noopener">
+                    <a href="https://miklosdanka.com" target="_blank" rel="noopener noreferrer">
                         other projects
                     </a>
                     .
@@ -233,7 +233,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
                 {isRevealed && <p className="md-running-text">{resultElement}</p>}
                 {isRevealed && (
                     <p className="md-running-text">
-                        The correct answer was '{casePreposition} {solutionsPartsList.map(this.renderSolutionsParts)}'.
+                        The correct answer was &apos;{casePreposition} {solutionsPartsList.map(this.renderSolutionsParts)}&apos;.
                     </p>
                 )}
                 {isRevealed && this.renderCreateWordIssueLink()}
@@ -279,7 +279,7 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         return (
             <p>
                 {question}{" "}
-                <a target="_blank" href={issueUrl} rel="noopener">
+                <a target="_blank" href={issueUrl} rel="noopener noreferrer">
                     {callToAction}
                 </a>
             </p>
@@ -473,9 +473,8 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.localDataManager.setScores(scores);
     };
 
-    private handleCurrentGuessChange = (event: React.ChangeEvent<any>) => {
-        const currentGuess = event.target.value;
-        this.setState({ currentGuess });
+    private handleCurrentGuessChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ currentGuess: event.target.value });
     };
 
     private getCaseClickHandler = (caseNumber: number) => () => {
@@ -532,9 +531,9 @@ export class AppContainer extends React.PureComponent<{}, IAppState> {
         this.focusOnNextWordButton();
     };
 
-    private getHandlerIfEnter = (handler: (event: any) => any) => (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key == "Enter") {
-            handler(event);
+    private getHandlerIfEnter = (handler: () => void) => (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            handler();
         }
     };
 
