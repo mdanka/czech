@@ -1,4 +1,4 @@
-@import "@mdanka/glass-ui/lib/css/index.css";
-@import "@mdanka/glass-ui/lib/scss/variables.scss";
+@use "@mdanka/glass-ui/lib/css/index.css" as *;
+@use "@mdanka/glass-ui/lib/scss/variables.scss";
 
-@import "./components/index";
+@use "./components/index" as *;
