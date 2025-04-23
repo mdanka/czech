@@ -87,14 +87,14 @@ export const AppContainer: React.FC = () => {
 
     const localDataManager = useRef(new LocalData()).current;
 
-    const setScores = useCallback((newScores: IScores) => {
+    const setScores = useCallback(async (newScores: IScores) => {
         setScoresState(newScores);
-        localDataManager.setScores(newScores);
+        await localDataManager.setScores(newScores);
     }, [localDataManager]);
 
-    const setSelectedCases = useCallback((newSelectedCases: Set<number>) => {
+    const setSelectedCases = useCallback(async (newSelectedCases: Set<number>) => {
         setSelectedCasesState(newSelectedCases);
-        localDataManager.setSelectedCases(newSelectedCases);
+        await localDataManager.setSelectedCases(newSelectedCases);
     }, [localDataManager]);
 
     const loadLocalData = useCallback(async () => {
@@ -108,7 +108,7 @@ export const AppContainer: React.FC = () => {
         // Dynamic import for database - access .default for ES modules
         const dbModule = await import("../../database/words.json");
         const db = dbModule.default as IWordDatabase;
-        
+
         const numWords = Object.keys(db).length;
         const numDeclensions = Object.keys(db)
             .map(word => {
@@ -137,8 +137,18 @@ export const AppContainer: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        loadLocalData();
-        loadDatabase();
+        const loadData = async () => {
+            try {
+                await loadLocalData();
+                await loadDatabase();
+            } catch (error) {
+                console.error("Error loading data in useEffect:", error);
+                // Optionally set an error state here
+            }
+        };
+
+        void loadData(); // Call the async function, void prevents warning on this call
+
     }, [loadLocalData, loadDatabase]);
 
     const generateGenderString = useCallback((gender: IGender | null, isAnimated: boolean): string => {
@@ -171,13 +181,13 @@ export const AppContainer: React.FC = () => {
         return normalizedSolutions.indexOf(normalizedGuess) !== -1;
     }, [currentPuzzle, currentGuess, normalizeString]);
 
-    const increaseScore = useCallback((type: keyof IScores) => {
-        const newScores = { ...scores }; 
+    const increaseScore = useCallback(async (type: keyof IScores) => {
+        const newScores = { ...scores };
         newScores[type]++;
-        setScores(newScores);
+        await setScores(newScores);
     }, [scores, setScores]);
 
-    const focusOnRef = useCallback((refObject: React.RefObject<HTMLElement>) => {
+    const focusOnRef = useCallback((refObject: React.RefObject<HTMLElement | HTMLInputElement | HTMLButtonElement | null>) => {
         const element = refObject.current;
         if (element === null) {
             console.error(`Tried to focus on ref, but it was null.`);
@@ -204,8 +214,8 @@ export const AppContainer: React.FC = () => {
     }, []);
 
     const caseToString = useCallback((caseObject: ICase | null, isSingular: boolean): string[] => {
-         const caseStringOrNull = caseObject == null ? null : isSingular ? caseObject.singular : caseObject.plural;
-         return caseStringOrNull == null ? [] : caseStringOrNull;
+        const caseStringOrNull = caseObject == null ? null : isSingular ? caseObject.singular : caseObject.plural;
+        return caseStringOrNull == null ? [] : caseStringOrNull;
     }, []);
 
     const wordInfoToCaseList = useCallback((info: IWordInformation): string[][] => {
@@ -259,7 +269,7 @@ export const AppContainer: React.FC = () => {
         };
     }, [database, selectedCases, selectRandom, wordInfoToCaseList]);
 
-    const handleNewWordClick = useCallback((isSkipped: boolean) => {
+    const handleNewWordClick = useCallback(async (isSkipped: boolean) => {
         let word: ICurrentPuzzle | undefined;
         const maxTries = 100;
         let numTries = 0;
@@ -272,18 +282,18 @@ export const AppContainer: React.FC = () => {
         setCurrentGuess(initialGuess);
         setIsRevealed(false);
         focusOnPracticeInput();
-        
+
         if (isSkipped) {
-            increaseScore("skipped");
+            await increaseScore("skipped");
         }
     }, [getRandomPuzzle, focusOnPracticeInput, increaseScore]);
 
     const handleSelectAllClick = useCallback(() => {
-        setSelectedCases(new Set(SELECTABLE_CASE_NUMBERS.slice()));
+        void setSelectedCases(new Set(SELECTABLE_CASE_NUMBERS.slice()));
     }, [setSelectedCases]);
 
     const handleDeselectAllClick = useCallback(() => {
-        setSelectedCases(new Set());
+        void setSelectedCases(new Set());
     }, [setSelectedCases]);
 
     const getCaseClickHandler = useCallback((caseNumber: number) => () => {
@@ -293,22 +303,22 @@ export const AppContainer: React.FC = () => {
         } else {
             newSelectedCases.add(caseNumber);
         }
-        setSelectedCases(newSelectedCases);
+        void setSelectedCases(newSelectedCases);
     }, [selectedCases, setSelectedCases]);
 
     const handleStartClick = useCallback(() => {
-        handleNewWordClick(false);
+        void handleNewWordClick(false);
         window.scrollTo(0, document.body.scrollHeight);
     }, [handleNewWordClick]);
 
     const handleSkipClick = useCallback(() => {
-        handleNewWordClick(!isRevealed);
+        void handleNewWordClick(!isRevealed);
     }, [handleNewWordClick, isRevealed]);
 
     const handleCheck = useCallback(() => {
         setIsRevealed(true);
         const guessResult = isGuessCorrect();
-        increaseScore(guessResult ? "correct" : "wrong");
+        void increaseScore(guessResult ? "correct" : "wrong");
         focusOnNextWordButton();
     }, [increaseScore, focusOnNextWordButton, isGuessCorrect]);
 
@@ -322,8 +332,8 @@ export const AppContainer: React.FC = () => {
         }
     }, []);
 
-    const resetScores = useCallback(() => {
-        setScores({ correct: 0, wrong: 0, skipped: 0 });
+    const handleResetScoresClick = useCallback(() => {
+        void setScores({ correct: 0, wrong: 0, skipped: 0 });
     }, [setScores]);
 
     const getWiktionaryUrl = useCallback((word: string): string => {
@@ -334,7 +344,7 @@ export const AppContainer: React.FC = () => {
         const issueTitleEncoded = encodeURIComponent(issueTitle);
         const issueBodyEncoded = encodeURIComponent(issueBody);
         const labelParam = label === undefined ? "" : `labels=${label}&`;
-        return `https://github.com/mdanka/czech/issues/new?${labelParam}title=${issueTitleEncoded}&body=${issueBodyEncoded}`;    
+        return `https://github.com/mdanka/czech/issues/new?${labelParam}title=${issueTitleEncoded}&body=${issueBodyEncoded}`;
     }, []);
 
     const getSolutionWordPartsForWord = useCallback((original: string, solution: string): ISolutionWordParts => {
@@ -406,7 +416,7 @@ export const AppContainer: React.FC = () => {
             </span>
         );
     };
-    
+
     const renderSolutionsParts = (solutionsParts: ISolutionWordParts[], index: number) => {
         return (
             <span key={JSON.stringify(solutionsParts)}>
@@ -422,7 +432,7 @@ export const AppContainer: React.FC = () => {
             <p>
                 <span className="md-intent-success">{correct} correct,</span>{" "}
                 <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped -{" "}
-                <a onClick={resetScores}>reset</a>
+                <a onClick={handleResetScoresClick}>reset</a>
             </p>
         );
     };
@@ -443,7 +453,7 @@ export const AppContainer: React.FC = () => {
                 </a>
             </p>
         );
-    };    
+    };
 
     const renderCreateGeneralIssueLink = () => {
         const question = "Do you have some feedback?";

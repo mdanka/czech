@@ -59,7 +59,8 @@ export default [
       }
     },
     rules: {
-      ...tseslint.configs.recommended.rules, // Apply recommended TS rules
+      // Apply recommended type-aware TS rules (stricter)
+      ...tseslint.configs['recommended-type-checked'].rules,
       ...pluginImport.configs.recommended.rules, // Apply recommended import rules
       ...pluginImport.configs.typescript.rules, // Apply TS import rules
 
