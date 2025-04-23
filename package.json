@@ -15,7 +15,6 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@mdanka/glass-ui": "^0.3.4",
     "classnames": "^2.5.1",
     "idb": "^8.0.0",
     "lodash": "^4.17.21",

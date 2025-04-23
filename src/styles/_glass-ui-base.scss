@@ -1,0 +1,160 @@
+@use "sass:meta"; // For loading CSS
+@use "sass:color"; // For color functions
+@use "./variables" as v; // Use local variables with namespace 'v'
+
+*, *::before, *::after {
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+html {
+    background-color: white;
+    width: 800px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+  
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    font-family: v.$glassFontFamily;
+    font-weight: 300;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.28581;
+}
+
+input, textarea {
+    font-family: v.$glassFontFamily;
+    font-weight: 300;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.28581;
+}
+  
+p {
+    padding: 0.5em 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    margin: 20px 0 10px;
+    padding: 0;
+}
+
+h1 { font-size: 36px; line-height: 40px; }
+h2 { font-size: 28px; line-height: 32px; }
+h3 { font-size: 22px; line-height: 25px; }
+h4 { font-size: 18px; line-height: 21px; }
+h5 { font-size: 16px; line-height: 19px; }
+h6 { font-size: 14px; line-height: 16px; }
+
+pre { margin: 0; }
+
+a, a:hover, a:active, a:visited {
+    color: v.$glassAccentColor;
+    cursor: pointer;
+}
+
+a, a:visited { text-decoration: none; }
+a:hover, a:active { text-decoration: underline; }
+
+.md-strong { font-weight: bold; }
+
+.md-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.md-code { font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; }
+
+.md-running-text {
+    padding-top: v.$glassGridSize;
+    padding-bottom: v.$glassGridSize;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+ul, ol {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+ul li:not(:last-child), ol li:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+.md-running-text.md-small { font-size: 14px; }
+.md-full-width { width: 100%; }
+
+@mixin buttonColours($color1, $color2) {
+    -moz-box-shadow: inset 0px 1px 0px 0px $color1;
+	-webkit-box-shadow: inset 0px 1px 0px 0px $color1;
+	box-shadow: inset 0px 1px 0px 0px $color1;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, $color1), color-stop(1, $color2));
+	background: -moz-linear-gradient(top, $color1 5%, $color2 100%);
+	background: -webkit-linear-gradient(top, $color1 5%, $color2 100%);
+	background: -o-linear-gradient(top, $color1 5%, $color2 100%);
+	background: -ms-linear-gradient(top, $color1 5%, $color2 100%);
+	background: linear-gradient(to bottom, $color1 5%, $color2 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$color1}', endColorstr='#{$color2}',GradientType=0);
+	background-color: $color1;
+}
+
+.md-button {
+    @include buttonColours(#ffffff, #f6f6f6);
+	border: 1px solid v.$glassBorderColor;
+	display: inline-block;
+	cursor: pointer;
+	font-family: inherit;
+	font-size: 14px;
+	padding: v.$glassInputPadding;
+	text-decoration: none;
+    text-shadow: 0px 1px 0px #ffffff;
+    
+    &:disabled {
+        color: rgba(0, 0, 0, 0.247);
+    }
+}
+
+.md-button:hover:not([disabled]) {
+    @include buttonColours(#f6f6f6, #ffffff);
+}
+
+.md-button:active {
+    @include buttonColours(color.adjust(#f6f6f6, $lightness: -5%), color.adjust(#ffffff, $lightness: -5%));
+}
+
+.md-button-group {
+    .md-button:not(:last-child) {
+        border-right: 0;
+    }
+}
+
+input {
+    padding: v.$glassInputPadding;
+    border: 1px solid v.$glassBorderColor;
+    line-height: normal;
+
+    &:disabled {
+        background-color: color.adjust(#ffffff, $lightness: -5%);
+    }
+}
+
+.md-intent-success { color: v.$glassIntentSuccess; }
+.md-intent-danger { color: v.$glassIntentDanger; }
+.md-intent-primary { color: v.$glassAccentColor; } // Use accent color directly
+
+.md-right-space { margin-right: v.$glassGridSize; }
+.md-left-space { margin-left: v.$glassGridSize; }
+
+/* MEDIA QUERIES */
+html { width: 350px; }
+@media (min-width: 576px) { html { width: 540px; } }
+@media (min-width: 768px) { html { width: 720px; } } 

@@ -1,0 +1,14 @@
+$glassMainColor: #222;
+$glassAccentColor: #2B95D6;
+// Use rgba for transparency instead of deprecated transparentize()
+$glassSubtleColor: rgba($glassMainColor, 0.7);
+$glassFontFamily: 'Nunito Sans', sans-serif;
+
+$glassGridSize: 8px;
+
+$glassBorderColor: #dcdcdc;
+$glassInputPadding: $glassGridSize $glassGridSize*2;
+
+$glassIntentSuccess: #197278;
+$glassIntentDanger: #c44536;
+$glassDarkAccentColor: #edddd4; 
