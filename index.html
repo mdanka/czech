@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#222222"/>
+  <meta name="theme-color" content="#222222" />
   <meta name="Description" content="Practise Czech grammar and declensions in an interactive app with over 50000 words">
   <!-- TODO: Update OG image path if needed -->
-  <meta property="og:description" content="Practise Czech grammar and declensions in an interactive app with over 50000 words" />
-  <meta property="og:image" content="/fb-share.png" /> 
+  <meta property="og:description"
+    content="Practise Czech grammar and declensions in an interactive app with over 50000 words" />
+  <meta property="og:image" content="/fb-share.png" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="/" /> <!-- Assuming relative URL for now -->
   <meta property="og:title" content="Czech Practice" />
   <title>Czech Practice</title>
-  
+
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-62449435-7"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'UA-62449435-7');
   </script>
 
-  <!-- Favicons - Assuming they will be in /public -->
-  <link rel="icon" type="image/png" href="/favicon_512x512.png" sizes="512x512">
-  <link rel="icon" type="image/png" href="/favicon_32x32.png" sizes="32x32">
+  <!-- Favicons based on manifest -->
+  <link rel="icon" href="/icons/icon-48x48.png" type="image/png" sizes="48x48">
+  <link rel="icon" href="/icons/icon-192x192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
   <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600&display=swap&subset=latin-ext" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600&display=swap&subset=latin-ext"
+    rel="stylesheet">
 </head>
+
 <body>
   <div id="app"></div>
   <noscript>
@@ -39,4 +44,5 @@
   <!-- Vite entry point -->
   <script type="module" src="/src/app.tsx"></script>
 </body>
-</html> 
+
+</html>
