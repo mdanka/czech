@@ -2,7 +2,9 @@
 .npmrc
 .vscode/
 node_modules/
+dev-dist/
 dist/
+build/
 yarn-error.log
 .DS_Store
 
