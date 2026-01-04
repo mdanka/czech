@@ -1,3 +1,5 @@
+@use "../styles/variables" as v;
+
 html {
   scroll-behavior: smooth;
 }
@@ -41,4 +43,75 @@ html {
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Responsive Practice Screen Styles
+
+.practice-card {
+  display: flex;
+  flex-direction: column;
+  gap: v.$glassGridSize;
+  padding: v.$glassGridSize 0;
+}
+
+.practice-sentence {
+  display: flex;
+  flex-direction: column;
+  gap: v.$glassGridSize;
+  align-items: flex-start;
+  line-height: 1.5;
+
+  @media (min-width: 576px) {
+    flex-direction: row;
+    align-items: baseline; // Align text and inputs better
+    flex-wrap: wrap;
+  }
+}
+
+.practice-input {
+  width: 100%;
+
+  @media (min-width: 576px) {
+    width: auto;
+    min-width: 150px;
+  }
+}
+
+.practice-controls {
+  display: flex;
+  flex-direction: row;
+  gap: v.$glassGridSize;
+  margin-top: v.$glassGridSize;
+  width: 100%;
+
+  button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (min-width: 576px) {
+    width: auto;
+    margin-top: 0;
+
+    button {
+      flex: initial;
+      width: auto;
+    }
+  }
+}
+
+// Utility to ensure spacing on mobile for text segments
+.text-segment {
+  margin-bottom: v.$glassGridSize * 0.5;
+
+  @media (min-width: 576px) {
+    margin-bottom: 0;
+  }
+}
+
+.practice-feedback {
+  margin-top: v.$glassGridSize;
+  line-height: 1.5;
 }

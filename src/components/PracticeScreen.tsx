@@ -248,18 +248,16 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const caseName = ALL_CASE_NAMES[caseNumber];
 
         return (
-            <div>
+            <div className="practice-card">
                 {renderScores()}
-                <p className="md-running-text">
-                    The word <span className="md-strong">{word}</span> ({genderString})
-                </p>
-                <p className="md-running-text">
-                    in the case <span className="md-strong">{caseName}</span> is:
-                </p>
-                <p className="md-running-text">
-                    <span className="md-right-space">{casePreposition}</span>
+                <div className="practice-sentence">
+                    <span className="text-segment">The word <span className="md-strong">{word}</span> ({genderString})</span>
+                    <span className="text-segment">in the case <span className="md-strong">{caseName}</span> is:</span>
+                </div>
+                <div className="practice-sentence">
+                    {casePreposition && <span className="text-segment">{casePreposition}</span>}
                     <input
-                        className="md-right-space"
+                        className="practice-input"
                         type="text"
                         value={currentGuess}
                         disabled={isRevealed}
@@ -272,22 +270,24 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                         autoCapitalize="off"
                         spellCheck="false"
                     />
-                    <button
-                        className="md-button md-right-space md-intent-primary"
-                        onClick={handleCheck}
-                        disabled={isRevealed}
-                    >
-                        Check answer
-                    </button>
-                    <button className="md-button" onClick={handleSkipClick} ref={practiceNextWordButtonRef}>
-                        Next word
-                    </button>
-                </p>
-                {isRevealed && <p className="md-running-text">{resultElement}</p>}
+                    <div className="practice-controls">
+                        <button
+                            className="md-button md-intent-primary"
+                            onClick={handleCheck}
+                            disabled={isRevealed}
+                        >
+                            Check answer
+                        </button>
+                        <button className="md-button" onClick={handleSkipClick} ref={practiceNextWordButtonRef}>
+                            Next word
+                        </button>
+                    </div>
+                </div>
+                {isRevealed && <div className="practice-feedback">{resultElement}</div>}
                 {isRevealed && (
-                    <p className="md-running-text">
+                    <div className="practice-feedback">
                         The correct answer was &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;.
-                    </p>
+                    </div>
                 )}
                 {isRevealed && renderCreateWordIssueLink()}
             </div>
@@ -296,7 +296,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
 
     const toggleTooltip = () => {
         setIsTooltipVisible(!isTooltipVisible);
-    }
+    };
 
     const renderTooltip = () => {
         if (!isTooltipVisible) {
@@ -315,8 +315,8 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     ))}
                 </ul>
             </div>
-        )
-    }
+        );
+    };
 
     return (
         <div className="practice-screen">
