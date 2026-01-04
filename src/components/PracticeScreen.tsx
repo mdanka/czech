@@ -102,12 +102,33 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         }
     }, [getRandomPuzzle, increaseScore, focusOnPracticeInput]);
 
+    const tooltipRef = useRef<HTMLDivElement>(null);
+
     // Initial load
     useEffect(() => {
         if (!currentPuzzle) {
             void handleNewWordClick(false);
         }
     }, [currentPuzzle, handleNewWordClick]);
+
+    // Handle tooltip outside click
+    useEffect(() => {
+        const handleClickOutside = (event: PointerEvent) => {
+            if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+                setIsTooltipVisible(false);
+            }
+        };
+
+        if (isTooltipVisible) {
+            document.addEventListener("pointerdown", handleClickOutside as EventListener);
+        } else {
+            document.removeEventListener("pointerdown", handleClickOutside as EventListener);
+        }
+
+        return () => {
+            document.removeEventListener("pointerdown", handleClickOutside as EventListener);
+        };
+    }, [isTooltipVisible]);
 
     const isGuessCorrect = useCallback((): boolean => {
         if (currentPuzzle == null) {
@@ -306,8 +327,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     </button>
                     <div
                         className="cases-selected-container"
-                        onMouseEnter={() => setIsTooltipVisible(true)}
-                        onMouseLeave={() => setIsTooltipVisible(false)}
+                        ref={tooltipRef}
                         onClick={toggleTooltip}
                     >
                         <span className="cases-selected-text">
