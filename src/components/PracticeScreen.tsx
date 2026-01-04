@@ -274,7 +274,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
 
     return (
         <div className="practice-screen">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 10px 0" }}>
                 <button className="md-button" onClick={onBack}>
                     &larr; Settings
                 </button>
