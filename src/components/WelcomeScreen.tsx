@@ -19,7 +19,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
 }) => {
     const renderCreateGeneralIssueLink = () => {
         const question = "Do you have some feedback?";
-        const callToAction = "Click here to let us know.";
+        const callToAction = "Click here to let me know.";
         const issueTitle = `Feedback about <fill in here>`;
         const issueBody = `<fill in here>`;
         const issueUrl = getCreateIssueUrl(issueTitle, issueBody, undefined);
