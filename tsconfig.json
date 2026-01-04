@@ -10,8 +10,8 @@
             "es5",
             "scripthost"
         ],
-        "module": "esnext",
-        "moduleResolution": "node",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "noEmitHelpers": false,
         "noImplicitAny": true,
         "noUnusedLocals": true,
@@ -23,7 +23,8 @@
         "strict": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-        "target": "ES5"
+        "target": "ESNext",
+        "useDefineForClassFields": true
     },
     "exclude": [
         "build",
