@@ -109,7 +109,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
             <div className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(renderCaseCheckboxes)}</div>
 
             <p className="md-running-text" style={{ marginTop: "20px" }}>
-                <button className="md-button md-intent-primary" onClick={onStart}>
+                <button className="md-button md-intent-primary" onClick={onStart} disabled={selectedCases.size === 0}>
                     Practise
                 </button>
             </p>
