@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { IWordDatabase, ICurrentPuzzle, ISolutionWordParts } from "./types";
-import { ALL_CASE_NAMES, CASE_PREPOSITIONS } from "./constants";
+import { ALL_CASE_NAMES, CASE_PREPOSITIONS, SELECTABLE_CASE_NUMBERS } from "./constants";
 import { IScores } from "./LocalData";
 import {
     selectRandom,
@@ -32,6 +32,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
     const [currentPuzzle, setCurrentPuzzle] = useState<ICurrentPuzzle | undefined>(undefined);
     const [currentGuess, setCurrentGuess] = useState<string>("");
     const [isRevealed, setIsRevealed] = useState<boolean>(false);
+    const [isTooltipVisible, setIsTooltipVisible] = useState<boolean>(false);
 
     const practiceInputRef = useRef<HTMLInputElement>(null);
     const practiceNextWordButtonRef = useRef<HTMLButtonElement>(null);
@@ -272,12 +273,49 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         );
     };
 
+    const toggleTooltip = () => {
+        setIsTooltipVisible(!isTooltipVisible);
+    }
+
+    const renderTooltip = () => {
+        if (!isTooltipVisible) {
+            return null;
+        }
+        const sortedSelectedCases = Array.from(selectedCases).sort((a, b) => {
+            return SELECTABLE_CASE_NUMBERS.indexOf(a) - SELECTABLE_CASE_NUMBERS.indexOf(b);
+        });
+        return (
+            <div className="cases-selected-tooltip">
+                <ul style={{ margin: 0, padding: 0, listStyleType: "none", textAlign: "left" }}>
+                    {sortedSelectedCases.map(caseNumber => (
+                        <li key={caseNumber} style={{ marginBottom: "4px" }}>
+                            {ALL_CASE_NAMES[caseNumber]}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
+
     return (
         <div className="practice-screen">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 10px 0" }}>
-                <button className="md-button" onClick={onBack}>
-                    &larr; Settings
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <button className="md-button" onClick={onBack}>
+                        &larr; Settings
+                    </button>
+                    <div
+                        className="cases-selected-container"
+                        onMouseEnter={() => setIsTooltipVisible(true)}
+                        onMouseLeave={() => setIsTooltipVisible(false)}
+                        onClick={toggleTooltip}
+                    >
+                        <span className="cases-selected-text">
+                            {selectedCases.size} cases selected
+                        </span>
+                        {renderTooltip()}
+                    </div>
+                </div>
             </div>
 
             <div className="czech-practice-container">
