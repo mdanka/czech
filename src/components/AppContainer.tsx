@@ -20,9 +20,9 @@ export const AppContainer: React.FC = () => {
         await localDataManager.setScores(newScores);
     }, [localDataManager]);
 
-    const setSelectedCases = useCallback(async (newSelectedCases: Set<number>) => {
+    const setSelectedCases = useCallback((newSelectedCases: Set<number>) => {
         setSelectedCasesState(newSelectedCases);
-        await localDataManager.setSelectedCases(newSelectedCases);
+        void localDataManager.setSelectedCases(newSelectedCases);
     }, [localDataManager]);
 
     const loadLocalData = useCallback(async () => {
