@@ -76,16 +76,16 @@ export default [
         { selector: 'variableLike', format: ['camelCase', 'PascalCase', 'UPPER_CASE'], leadingUnderscore: 'allow' },
         { selector: 'typeLike', format: ['PascalCase'] },
       ],
-       'no-restricted-syntax': [ // Keep the ban rules
-         'warn',
-         { selector: "MemberExpression[object.name='_'][property.name='extend']", message: 'Use object spread syntax `{...obj}` instead of `_.extend`.' },
-         { selector: "MemberExpression[object.name='_'][property.name='isNull']", message: 'Use plain JS `obj === null` instead of `_.isNull`.' },
-         { selector: "MemberExpression[object.name='assert'][property.name='equal']", message: 'Use `assert.strictEqual` instead of `assert.equal`.' },
-         { selector: "MemberExpression[object.name='describe'][property.name='only']", message: '`describe.only` should not be committed.' },
-         { selector: "MemberExpression[object.name='it'][property.name='only']", message: '`it.only` should not be committed.' },
-         { selector: "CallExpression[callee.object.name='Object'][callee.property.name='assign']", message: 'Use object spread syntax `{...obj}` instead of `Object.assign`.' },
-         { selector: "MemberExpression[object.name='test'][property.name='only']", message: '`test.only` should not be committed.' }
-       ],
+      'no-restricted-syntax': [ // Keep the ban rules
+        'warn',
+        { selector: "MemberExpression[object.name='_'][property.name='extend']", message: 'Use object spread syntax `{...obj}` instead of `_.extend`.' },
+        { selector: "MemberExpression[object.name='_'][property.name='isNull']", message: 'Use plain JS `obj === null` instead of `_.isNull`.' },
+        { selector: "MemberExpression[object.name='assert'][property.name='equal']", message: 'Use `assert.strictEqual` instead of `assert.equal`.' },
+        { selector: "MemberExpression[object.name='describe'][property.name='only']", message: '`describe.only` should not be committed.' },
+        { selector: "MemberExpression[object.name='it'][property.name='only']", message: '`it.only` should not be committed.' },
+        { selector: "CallExpression[callee.object.name='Object'][callee.property.name='assign']", message: 'Use object spread syntax `{...obj}` instead of `Object.assign`.' },
+        { selector: "MemberExpression[object.name='test'][property.name='only']", message: '`test.only` should not be committed.' }
+      ],
     }
   },
 
@@ -94,18 +94,18 @@ export default [
     files: ["**/*.{jsx,tsx}"], // Target JSX/TSX files
     ...pluginReactConfig, // Apply base recommended React rules (includes parser options, settings etc.)
     settings: { // Ensure settings are merged/set correctly
-        react: { version: 'detect' },
-        ...pluginReactConfig.settings // Merge existing settings if any
+      react: { version: 'detect' },
+      ...pluginReactConfig.settings // Merge existing settings if any
     },
     plugins: { // Add React/Hooks plugins here for JSX/TSX files
       ...pluginReactConfig.plugins, // Merge existing plugins if any
       'react-hooks': pluginReactHooks, // Use the plugin object
     },
     rules: {
-        ...pluginReactConfig.rules, // Base React rules
-        ...pluginReactJsxRuntime.rules, // New JSX transform rules
-        ...pluginReactHooks.configs.recommended.rules, // React Hooks rules
-        'react/prop-types': 'off', // Turn off prop-types as we use TS
+      ...pluginReactConfig.rules, // Base React rules
+      ...pluginReactJsxRuntime.rules, // New JSX transform rules
+      ...pluginReactHooks.configs.recommended.rules, // React Hooks rules
+      'react/prop-types': 'off', // Turn off prop-types as we use TS
     }
   },
 
@@ -114,6 +114,6 @@ export default [
 
   // Ignore patterns (alternative way in flat config)
   {
-    ignores: ["dist/", "eslint.config.js", "vite.config.ts"],
+    ignores: ["build/", "dist/", "eslint.config.js", "vite.config.ts"],
   }
 ]; 

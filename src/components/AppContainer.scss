@@ -2,6 +2,43 @@ html {
   scroll-behavior: smooth;
 }
 
+
 .czech-practice-container {
   min-height: 300px;
+}
+
+.cases-selected-container {
+  position: relative;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.cases-selected-text {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9em;
+
+  &:hover {
+    color: black;
+  }
+}
+
+.cases-selected-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  z-index: 100;
+  white-space: nowrap;
+  margin-top: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-size: 0.85em;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
