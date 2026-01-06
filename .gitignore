@@ -1,6 +1,5 @@
 .idea/
 .npmrc
-.vscode/
 node_modules/
 dev-dist/
 dist/

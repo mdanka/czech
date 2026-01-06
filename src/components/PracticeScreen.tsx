@@ -282,10 +282,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                         </Button>
                         <Button
                             onClick={handleSkipClick}
-                            ref={practiceNextWordButtonRef} // Pass ref through props if needed, but Button needs forwardRef. For now simple ref is passed but might not attach to DOM button unless handled.
-                            // NOTE: Button component doesn't forward ref by default in prev step. Let's fix that or use it as is for now if it works. 
-                            // Actually pure React.FC doesn't take ref. Let's assume standard button behavior or fix up.
-                            // The ref is used for focus management.
+                            ref={practiceNextWordButtonRef}
                             className="flex-1 justify-center sm:flex-none sm:w-auto"
                         >
                             Next word
