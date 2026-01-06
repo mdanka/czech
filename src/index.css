@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: 'Nunito Sans', sans-serif;
+
+    --color-primary: #2B95D6;
+    /* $glassAccentColor */
+    --color-success: #197278;
+    /* $glassIntentSuccess */
+    --color-danger: #c44536;
+    /* $glassIntentDanger */
+    --color-border: #dcdcdc;
+    /* $glassBorderColor */
+    --color-text-main: #222;
+    /* $glassMainColor */
+    --color-text-subtle: rgba(34, 34, 34, 0.7);
+    /* $glassSubtleColor */
+
+    --radius-sm: 4px;
+}
+
+/* Custom Base Styles - Ported from _glass-ui-base.scss */
+@layer base {
+    html {
+        @apply scroll-smooth bg-white mx-auto box-border;
+        width: 350px;
+    }
+
+    @media (min-width: 576px) {
+        html {
+            width: 540px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        html {
+            width: 720px;
+        }
+    }
+
+    body {
+        @apply flex flex-col items-stretch m-0 font-sans font-light text-[14px] normal-case tracking-normal leading-[1.28581];
+    }
+
+    /* Headings */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-semibold m-0 p-0 mb-[10px] mt-[20px];
+    }
+
+    h1 {
+        @apply text-[36px] leading-[40px];
+    }
+
+    h2 {
+        @apply text-[28px] leading-[32px];
+    }
+
+    h3 {
+        @apply text-[22px] leading-[25px];
+    }
+
+    h4 {
+        @apply text-[18px] leading-[21px];
+    }
+
+    h5 {
+        @apply text-[16px] leading-[19px];
+    }
+
+    h6 {
+        @apply text-[14px] leading-[16px];
+    }
+
+    a {
+        @apply text-primary cursor-pointer no-underline;
+    }
+
+    a:hover,
+    a:active {
+        @apply underline;
+    }
+}

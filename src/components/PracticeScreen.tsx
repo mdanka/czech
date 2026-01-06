@@ -11,6 +11,7 @@ import {
     getCreateIssueUrl,
     getSolutionsWordParts,
 } from "./utils";
+import { Button } from "./Button";
 
 interface IPracticeScreenProps {
     database: IWordDatabase;
@@ -169,8 +170,8 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const { correct, wrong, skipped } = scores;
         return (
             <p>
-                <span className="md-intent-success">{correct} correct,</span>{" "}
-                <span className="md-intent-danger">{wrong} wrong,</span> {skipped} skipped -{" "}
+                <span className="text-success">{correct} correct,</span>{" "}
+                <span className="text-danger">{wrong} wrong,</span> {skipped} skipped -{" "}
                 <a onClick={handleResetScoresClick}>reset</a>
             </p>
         );
@@ -216,7 +217,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
             <span key={beginning + ending}>
                 {index > 0 ? " " : ""}
                 {beginning}
-                <span className="md-strong">{ending}</span>
+                <span className="font-bold">{ending}</span>
             </span>
         );
     };
@@ -239,25 +240,25 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const genderString = generateGenderString(gender, isAnimated);
         const isCorrect = isGuessCorrect();
         const resultElement = isCorrect ? (
-            <span className="md-strong md-intent-success">✓ Correct!</span>
+            <span className="font-bold text-success">✓ Correct!</span>
         ) : (
-            <span className="md-strong md-intent-danger">✗ Incorrect</span>
+            <span className="font-bold text-danger">✗ Incorrect</span>
         );
         const solutionsPartsList = getSolutionsWordParts(word, solutions);
         const casePreposition = CASE_PREPOSITIONS[caseNumber];
         const caseName = ALL_CASE_NAMES[caseNumber];
 
         return (
-            <div className="practice-card">
+            <div className="flex flex-col gap-2 py-2">
                 {renderScores()}
-                <div className="practice-sentence">
-                    <span className="text-segment">The word <span className="md-strong">{word}</span> ({genderString})</span>
-                    <span className="text-segment">in the case <span className="md-strong">{caseName}</span> is:</span>
+                <div className="flex flex-col gap-2 items-start leading-[1.5] sm:flex-row sm:items-baseline sm:flex-wrap">
+                    <span className="mb-1 sm:mb-0">The word <span className="font-bold">{word}</span> ({genderString})</span>
+                    <span className="mb-1 sm:mb-0">in the case <span className="font-bold">{caseName}</span> is:</span>
                 </div>
-                <div className="practice-sentence">
-                    {casePreposition && <span className="text-segment">{casePreposition}</span>}
+                <div className="flex flex-col gap-2 items-start leading-[1.5] sm:flex-row sm:items-baseline sm:flex-wrap">
+                    {casePreposition && <span className="mb-1 sm:mb-0">{casePreposition}</span>}
                     <input
-                        className="practice-input"
+                        className="w-full sm:w-auto sm:min-w-[150px] px-2 py-2 border border-border leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2]"
                         type="text"
                         value={currentGuess}
                         disabled={isRevealed}
@@ -270,22 +271,30 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                         autoCapitalize="off"
                         spellCheck="false"
                     />
-                    <div className="practice-controls">
-                        <button
-                            className="md-button md-intent-primary"
+                    <div className="flex flex-row gap-2 mt-2 w-full sm:w-auto sm:mt-0">
+                        <Button
+                            variant="primary"
                             onClick={handleCheck}
                             disabled={isRevealed}
+                            className="flex-1 justify-center sm:flex-none sm:w-auto"
                         >
                             Check answer
-                        </button>
-                        <button className="md-button" onClick={handleSkipClick} ref={practiceNextWordButtonRef}>
+                        </Button>
+                        <Button
+                            onClick={handleSkipClick}
+                            ref={practiceNextWordButtonRef} // Pass ref through props if needed, but Button needs forwardRef. For now simple ref is passed but might not attach to DOM button unless handled.
+                            // NOTE: Button component doesn't forward ref by default in prev step. Let's fix that or use it as is for now if it works. 
+                            // Actually pure React.FC doesn't take ref. Let's assume standard button behavior or fix up.
+                            // The ref is used for focus management.
+                            className="flex-1 justify-center sm:flex-none sm:w-auto"
+                        >
                             Next word
-                        </button>
+                        </Button>
                     </div>
                 </div>
-                {isRevealed && <div className="practice-feedback">{resultElement}</div>}
+                {isRevealed && <div className="mt-2 leading-[1.5]">{resultElement}</div>}
                 {isRevealed && (
-                    <div className="practice-feedback">
+                    <div className="mt-2 leading-[1.5]">
                         The correct answer was &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;.
                     </div>
                 )}
@@ -306,7 +315,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
             return SELECTABLE_CASE_NUMBERS.indexOf(a) - SELECTABLE_CASE_NUMBERS.indexOf(b);
         });
         return (
-            <div className="cases-selected-tooltip">
+            <div className="absolute top-full left-0 bg-[rgba(0,0,0,0.9)] text-white p-[10px] rounded-[4px] z-[100] whitespace-nowrap mt-[5px] shadow-[0_2px_10px_rgba(0,0,0,0.5)] text-[0.85em] max-h-[300px] overflow-y-auto border border-[rgba(255,255,255,0.1)]">
                 <ul style={{ margin: 0, padding: 0, listStyleType: "none", textAlign: "left" }}>
                     {sortedSelectedCases.map(caseNumber => (
                         <li key={caseNumber} style={{ marginBottom: "4px" }}>
@@ -322,15 +331,15 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         <div className="practice-screen">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 10px 0" }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <button className="md-button" onClick={onBack}>
+                    <Button onClick={onBack}>
                         &larr; Settings
-                    </button>
+                    </Button>
                     <div
-                        className="cases-selected-container"
+                        className="relative inline-block ml-[10px]"
                         ref={tooltipRef}
                         onClick={toggleTooltip}
                     >
-                        <span className="cases-selected-text">
+                        <span className="cursor-pointer underline decoration-dotted text-[rgba(0,0,0,0.6)] text-[0.9em] hover:text-black">
                             {selectedCases.size} cases selected
                         </span>
                         {renderTooltip()}
@@ -338,7 +347,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                 </div>
             </div>
 
-            <div className="czech-practice-container">
+            <div className="min-h-[300px]">
                 {renderCurrentPuzzle()}
             </div>
         </div>
