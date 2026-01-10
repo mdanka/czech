@@ -171,8 +171,8 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         return (
             <div className="flex items-center justify-center gap-4 text-[13px] text-text-subtle">
                 <span>
-                    <span className="text-success font-semibold">{correct}</span> correct,{" "}
-                    <span className="text-danger font-semibold">{wrong}</span> wrong,{" "}
+                    <span className="text-success">{correct} correct</span>,{" "}
+                    <span className="text-danger">{wrong} wrong</span>,{" "}
                     {skipped} skipped
                 </span>
                 <Button size="tiny" onClick={handleResetScoresClick}>
@@ -199,7 +199,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const issueUrl = getCreateIssueUrl(issueTitle, issueBody, "word");
         return (
             <div className="text-[12px] text-text-subtle mt-4 text-center">
-                {question}{" "}
+                <div>{question}</div>
                 <a target="_blank" href={issueUrl} rel="noopener noreferrer">
                     {callToAction}
                 </a>
@@ -248,14 +248,11 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const caseName = ALL_CASE_NAMES[caseNumber];
 
         return (
-            <div className="flex flex-col gap-4 py-4 w-full max-w-[400px]">
-                <div className="flex flex-col items-center gap-1">
+            <div className="flex flex-col gap-4 py-4 w-full">
+                <div className="flex flex-col items-center">
                     <span className="text-[14px]">The word</span>
-                    <div className={`${genderColorClass} text-center`}>
-                        <span className="text-[28px] font-bold leading-tight">{word}</span>
-                        {" "}
-                        <span className="text-[14px]">({genderString})</span>
-                    </div>
+                    <span className={`${genderColorClass} text-[28px] font-bold leading-tight text-center`}>{word}</span>
+                    <span className={`${genderColorClass} text-[14px] text-center`}>({genderString})</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-1">
@@ -289,14 +286,14 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                         variant="primary"
                         onClick={handleCheck}
                         disabled={isRevealed}
-                        className="w-2/3 justify-center"
+                        className="flex-[2] justify-center"
                     >
                         Check answer
                     </Button>
                     <Button
                         onClick={handleSkipClick}
                         ref={practiceNextWordButtonRef}
-                        className="w-1/3 justify-center"
+                        className="flex-1 justify-center"
                     >
                         Next
                     </Button>
@@ -340,7 +337,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
     };
 
     return (
-        <div className="practice-screen flex flex-col gap-4 py-4">
+        <div className="practice-screen flex flex-col gap-4 py-4 max-w-[400px] mx-auto">
             <div className="flex justify-between items-center w-full">
                 <Button onClick={onBack}>
                     &larr; Settings
@@ -361,7 +358,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                 {renderScores()}
             </div>
 
-            <div className="min-h-[300px] flex flex-col items-center">
+            <div className="min-h-[300px] flex flex-col items-center w-full">
                 {renderCurrentPuzzle()}
             </div>
         </div>
