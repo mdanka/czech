@@ -214,7 +214,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
             <span key={beginning + ending}>
                 {index > 0 ? " " : ""}
                 {beginning}
-                <span className="font-bold">{ending}</span>
+                <span className="font-bold text-text-main">{ending}</span>
             </span>
         );
     };
@@ -307,7 +307,10 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     <div className="mt-4 flex flex-col items-center gap-2">
                         {resultElement}
                         <div className="text-[14px] text-center">
-                            The correct answer was &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;.
+                            The correct answer was
+                        </div>
+                        <div className="text-[20px] text-center text-text-subtle">
+                            &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;
                         </div>
                     </div>
                 )}
