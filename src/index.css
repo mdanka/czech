@@ -16,6 +16,10 @@
     --color-text-subtle: rgba(34, 34, 34, 0.7);
     /* $glassSubtleColor */
 
+    --color-feminine: #ff2d55;
+    --color-masculine: #007aff;
+    --color-neutrum: #8e8e93;
+
     --radius-sm: 4px;
 }
 

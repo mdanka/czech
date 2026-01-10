@@ -169,29 +169,16 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
     const renderScores = () => {
         const { correct, wrong, skipped } = scores;
         return (
-            <p>
-                <span className="text-success">{correct} correct,</span>{" "}
-                <span className="text-danger">{wrong} wrong,</span> {skipped} skipped -{" "}
-                <a onClick={handleResetScoresClick}>reset</a>
-            </p>
-        );
-    };
-
-    const renderCreateIssueLink = (
-        question: string,
-        callToAction: string,
-        issueTitle: string,
-        issueBody: string,
-        label: string | undefined,
-    ) => {
-        const issueUrl = getCreateIssueUrl(issueTitle, issueBody, label);
-        return (
-            <p>
-                {question}{" "}
-                <a target="_blank" href={issueUrl} rel="noopener noreferrer">
-                    {callToAction}
-                </a>
-            </p>
+            <div className="flex items-center justify-center gap-4 text-[13px] text-text-subtle">
+                <span>
+                    <span className="text-success font-semibold">{correct}</span> correct,{" "}
+                    <span className="text-danger font-semibold">{wrong}</span> wrong,{" "}
+                    {skipped} skipped
+                </span>
+                <Button size="tiny" onClick={handleResetScoresClick}>
+                    Reset
+                </Button>
+            </div>
         );
     };
 
@@ -208,7 +195,16 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const callToAction = "Click here to report an incorrect declension.";
         const issueTitle = `Wrong solution for "${word}"`;
         const issueBody = `The word [${word}](${wiktionaryUrl}) \`(${genderString})\` in the case \`${caseName}\` is specified as \`${solutions.join(", ")}\`, but I think it is incorrect because... <fill in why>`;
-        return renderCreateIssueLink(question, callToAction, issueTitle, issueBody, "word");
+
+        const issueUrl = getCreateIssueUrl(issueTitle, issueBody, "word");
+        return (
+            <div className="text-[12px] text-text-subtle mt-4 text-center">
+                {question}{" "}
+                <a target="_blank" href={issueUrl} rel="noopener noreferrer">
+                    {callToAction}
+                </a>
+            </div>
+        );
     };
 
     const renderSolutionWordParts = (solutionWordParts: ISolutionWordParts, index: number) => {
@@ -239,60 +235,79 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         const { gender, isAnimated } = info;
         const genderString = generateGenderString(gender, isAnimated);
         const isCorrect = isGuessCorrect();
+
+        const genderColorClass = gender === "f" ? "text-feminine" : gender === "m" ? "text-masculine" : "text-neutrum";
+
         const resultElement = isCorrect ? (
-            <span className="font-bold text-success">✓ Correct!</span>
+            <div className="text-[20px] font-bold text-success">✓ Correct!</div>
         ) : (
-            <span className="font-bold text-danger">✗ Incorrect</span>
+            <div className="text-[20px] font-bold text-danger">✗ Incorrect</div>
         );
         const solutionsPartsList = getSolutionsWordParts(word, solutions);
         const casePreposition = CASE_PREPOSITIONS[caseNumber];
         const caseName = ALL_CASE_NAMES[caseNumber];
 
         return (
-            <div className="flex flex-col gap-2 py-2">
-                {renderScores()}
-                <div className="flex flex-col gap-2 items-start leading-[1.5] sm:flex-row sm:items-baseline sm:flex-wrap">
-                    <span className="mb-1 sm:mb-0">The word <span className="font-bold">{word}</span> ({genderString})</span>
-                    <span className="mb-1 sm:mb-0">in the case <span className="font-bold">{caseName}</span> is:</span>
-                </div>
-                <div className="flex flex-col gap-2 items-start leading-[1.5] sm:flex-row sm:items-baseline sm:flex-wrap">
-                    {casePreposition && <span className="mb-1 sm:mb-0">{casePreposition}</span>}
-                    <input
-                        className="w-full sm:w-auto sm:min-w-[150px] px-2 py-2 border border-border leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2]"
-                        type="text"
-                        value={currentGuess}
-                        disabled={isRevealed}
-                        onChange={handleCurrentGuessChange}
-                        onKeyPress={getHandlerIfEnter(handleCheck)}
-                        ref={practiceInputRef}
-                        aria-label="Current guess"
-                        autoComplete="off"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck="false"
-                    />
-                    <div className="flex flex-row gap-2 mt-2 w-full sm:w-auto sm:mt-0">
-                        <Button
-                            variant="primary"
-                            onClick={handleCheck}
-                            disabled={isRevealed}
-                            className="flex-1 justify-center sm:flex-none sm:w-auto"
-                        >
-                            Check answer
-                        </Button>
-                        <Button
-                            onClick={handleSkipClick}
-                            ref={practiceNextWordButtonRef}
-                            className="flex-1 justify-center sm:flex-none sm:w-auto"
-                        >
-                            Next word
-                        </Button>
+            <div className="flex flex-col gap-4 py-4 w-full max-w-[400px]">
+                <div className="flex flex-col items-center gap-1">
+                    <span className="text-[14px]">The word</span>
+                    <div className={`${genderColorClass} text-center`}>
+                        <span className="text-[28px] font-bold leading-tight">{word}</span>
+                        {" "}
+                        <span className="text-[14px]">({genderString})</span>
                     </div>
                 </div>
-                {isRevealed && <div className="mt-2 leading-[1.5]">{resultElement}</div>}
+
+                <div className="flex flex-col items-center gap-1">
+                    <span className="text-[14px]">in the case</span>
+                    <span className="text-[20px] font-semibold text-center">{caseName}</span>
+                </div>
+
+                <div className="flex flex-col items-center gap-1">
+                    <span className="text-[14px]">is:</span>
+                    <div className="flex items-center w-full gap-2">
+                        {casePreposition && <span className="text-[16px] whitespace-nowrap">{casePreposition}</span>}
+                        <input
+                            className="flex-1 px-3 py-2 border border-border text-[16px] leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2] focus:outline-none focus:border-primary transition-colors"
+                            type="text"
+                            value={currentGuess}
+                            disabled={isRevealed}
+                            onChange={handleCurrentGuessChange}
+                            onKeyPress={getHandlerIfEnter(handleCheck)}
+                            ref={practiceInputRef}
+                            aria-label="Current guess"
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="off"
+                            spellCheck="false"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex flex-row gap-2 mt-4 w-full">
+                    <Button
+                        variant="primary"
+                        onClick={handleCheck}
+                        disabled={isRevealed}
+                        className="w-2/3 justify-center"
+                    >
+                        Check answer
+                    </Button>
+                    <Button
+                        onClick={handleSkipClick}
+                        ref={practiceNextWordButtonRef}
+                        className="w-1/3 justify-center"
+                    >
+                        Next
+                    </Button>
+                </div>
+
                 {isRevealed && (
-                    <div className="mt-2 leading-[1.5]">
-                        The correct answer was &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;.
+                    <div className="mt-4 flex flex-col items-center gap-2">
+                        {resultElement}
+                        <div className="text-[14px] text-center">
+                            The correct answer was &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;.
+                        </div>
                     </div>
                 )}
                 {isRevealed && renderCreateWordIssueLink()}
@@ -325,26 +340,28 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
     };
 
     return (
-        <div className="practice-screen">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 10px 0" }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Button onClick={onBack}>
-                        &larr; Settings
-                    </Button>
-                    <div
-                        className="relative inline-block ml-[10px]"
-                        ref={tooltipRef}
-                        onClick={toggleTooltip}
-                    >
-                        <span className="cursor-pointer underline decoration-dotted text-[rgba(0,0,0,0.6)] text-[0.9em] hover:text-black">
-                            {selectedCases.size} cases selected
-                        </span>
-                        {renderTooltip()}
-                    </div>
+        <div className="practice-screen flex flex-col gap-4 py-4">
+            <div className="flex justify-between items-center w-full">
+                <Button onClick={onBack}>
+                    &larr; Settings
+                </Button>
+                <div
+                    className="relative inline-block"
+                    ref={tooltipRef}
+                    onClick={toggleTooltip}
+                >
+                    <span className="cursor-pointer underline decoration-dotted text-text-subtle text-[0.9em] hover:text-text-main transition-colors">
+                        {selectedCases.size} cases selected
+                    </span>
+                    {renderTooltip()}
                 </div>
             </div>
 
-            <div className="min-h-[300px]">
+            <div className="w-full">
+                {renderScores()}
+            </div>
+
+            <div className="min-h-[300px] flex flex-col items-center">
                 {renderCurrentPuzzle()}
             </div>
         </div>
