@@ -18,19 +18,30 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
     databaseNumberOfWords,
     databaseNumberOfDeclensions,
 }) => {
-    const renderCreateGeneralIssueLink = () => {
-        const question = "Do you have some feedback?";
+    const renderFooter = () => {
+        const question = "Do you have feedback?";
         const callToAction = "Click here to let me know.";
         const issueTitle = `Feedback about <fill in here>`;
         const issueBody = `<fill in here>`;
         const issueUrl = getCreateIssueUrl(issueTitle, issueBody, undefined);
         return (
-            <p>
-                {question}{" "}
-                <a target="_blank" href={issueUrl} rel="noopener noreferrer">
-                    {callToAction}
-                </a>
-            </p>
+            <footer className="mt-12 pt-6 border-t border-border/30 text-center text-text-subtle text-sm">
+                <p className="mb-4">
+                    {question}{" "}
+                    <a target="_blank" href={issueUrl} rel="noopener noreferrer" className="font-medium">
+                        {callToAction}
+                    </a>
+                </p>
+                <div className="flex justify-center gap-4">
+                    <a href="https://github.com/mdanka/czech" target="_blank" rel="noopener noreferrer">
+                        Github Source
+                    </a>
+                    <span className="text-border">|</span>
+                    <a href="https://miklosdanka.com" target="_blank" rel="noopener noreferrer">
+                        My other projects
+                    </a>
+                </div>
+            </footer>
         );
     };
 
@@ -55,69 +66,103 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
         [selectedCases, setSelectedCases]
     );
 
-    const renderCaseCheckboxes = (caseNumber: number) => {
+    const renderCaseToggle = (caseNumber: number | null) => {
+        if (caseNumber === null) {
+            return <div key="placeholder" />;
+        }
         const caseName = ALL_CASE_NAMES[caseNumber];
+        const [caseNamePart1, caseNamePart2] = caseName.split(" – ");
+        const isSelected = selectedCases.has(caseNumber);
         return (
-            <div key={caseNumber} className="mb-1">
-                <label className="cursor-pointer select-none">
-                    <input
-                        type="checkbox"
-                        checked={selectedCases.has(caseNumber)}
-                        value={caseNumber}
-                        onChange={getCaseClickHandler(caseNumber)}
-                        aria-label={caseName}
-                        className="mr-2"
-                    />
-                    {caseName}
-                </label>
-            </div>
+            <button
+                key={caseNumber}
+                type="button"
+                onClick={getCaseClickHandler(caseNumber)}
+                className={`
+                    px-2 py-1.5 rounded-lg border transition-all duration-200 font-medium cursor-pointer text-center flex items-center justify-center min-h-[44px] whitespace-nowrap
+                    ${isSelected
+                        ? "bg-primary text-white border-primary shadow-sm"
+                        : "bg-white text-text-main border-border hover:border-primary/50"
+                    }
+                `}
+            >
+                {caseNamePart1}<br />
+                {caseNamePart2}
+            </button>
         );
     };
 
     return (
-        <div className="welcome-screen">
-            <h1>Czech Practice</h1>
-            <p className="py-2 text-[16px] leading-relaxed">
-                Practise Czech grammar and declensions in this interactive app with{" "}
-                <span className="font-bold">
-                    {databaseNumberOfWords === undefined ? "" : databaseNumberOfWords} words
-                </span>{" "}
-                and{" "}
-                <span className="font-bold">
-                    {databaseNumberOfDeclensions === undefined ? "" : databaseNumberOfDeclensions} declensions
-                </span>
-                .
-            </p>
-            {renderCreateGeneralIssueLink()}
-            <p>
-                App source on{" "}
-                <a href="https://github.com/mdanka/czech" target="_blank" rel="noopener noreferrer">
-                    Github
-                </a>
-                . See my{" "}
-                <a href="https://miklosdanka.com" target="_blank" rel="noopener noreferrer">
-                    other projects
-                </a>
-                .
-            </p>
-            <h3>Choose cases to practise</h3>
-            <div className="flex gap-0 mb-4">
-                <Button onClick={handleSelectAllClick} className="rounded-r-none border-r-0">
-                    Select all
-                </Button>
-                <Button onClick={handleDeselectAllClick} className="rounded-l-none">
-                    Deselect all
-                </Button>
-            </div>
-            <div className="py-2 text-[16px] leading-relaxed mb-4">
-                {SELECTABLE_CASE_NUMBERS.map(renderCaseCheckboxes)}
-            </div>
+        <div className="welcome-screen max-w-2xl mx-auto px-4 py-8">
+            <header className="mb-10 text-center">
+                <h1 className="mb-4 bg-linear-to-r from-primary to-[#54b1ed] bg-clip-text text-transparent font-bold">
+                    Czech Practice
+                </h1>
+                <p className="text-lg text-text-subtle leading-relaxed">
+                    Master Czech grammar and declensions through focused practice.
+                </p>
+            </header>
 
-            <div className="mt-5">
-                <Button variant="primary" onClick={onStart} disabled={selectedCases.size === 0}>
-                    Practise
-                </Button>
-            </div>
+            <section className="mb-10 grid grid-cols-2 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm text-center">
+                    <div className="text-2xl font-bold text-primary">
+                        {databaseNumberOfWords === undefined ? "--" : databaseNumberOfWords.toLocaleString()}
+                    </div>
+                    <div className="text-xs uppercase tracking-wider text-text-subtle font-semibold mt-1">
+                        Words
+                    </div>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm text-center">
+                    <div className="text-2xl font-bold text-primary">
+                        {databaseNumberOfDeclensions === undefined ? "--" : databaseNumberOfDeclensions.toLocaleString()}
+                    </div>
+                    <div className="text-xs uppercase tracking-wider text-text-subtle font-semibold mt-1">
+                        Declensions
+                    </div>
+                </div>
+            </section>
+
+            <section className="mb-10">
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="m-0! text-xl">Cases to practise</h3>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="default"
+                            onClick={handleSelectAllClick}
+                            className="py-1 px-3 text-xs"
+                            disabled={selectedCases.size === SELECTABLE_CASE_NUMBERS.length}
+                        >
+                            Select all
+                        </Button>
+                        <Button
+                            variant="default"
+                            onClick={handleDeselectAllClick}
+                            className="py-1 px-3 text-xs"
+                            disabled={selectedCases.size === 0}
+                        >
+                            Clear
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mb-8">
+                    {renderCaseToggle(null) /* placeholder instead of nominative singular */}
+                    {SELECTABLE_CASE_NUMBERS.map(renderCaseToggle)}
+                </div>
+
+                <div className="flex justify-center">
+                    <Button
+                        variant="primary"
+                        onClick={onStart}
+                        disabled={selectedCases.size === 0}
+                        className="px-10 py-4 text-lg rounded-2xl shadow-lg transition-transform hover:scale-105"
+                    >
+                        Start Practising
+                    </Button>
+                </div>
+            </section>
+
+            {renderFooter()}
         </div>
     );
 };
