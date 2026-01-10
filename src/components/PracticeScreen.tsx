@@ -345,7 +345,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
 
     return (
         <div className="practice-screen flex flex-col gap-4 py-4 max-w-[400px] mx-auto">
-            <div className="flex justify-between items-center w-full">
+            <div className="flex justify-start items-center w-full gap-4">
                 <Button onClick={onBack}>
                     &larr; Settings
                 </Button>
