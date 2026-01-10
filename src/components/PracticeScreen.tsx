@@ -251,7 +251,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
             <div className="flex flex-col gap-4 py-4 w-full">
                 <div className="flex flex-col items-center">
                     <span className="text-[14px]">The word</span>
-                    <span className={`${genderColorClass} text-[28px] font-bold leading-tight text-center`}>{word}</span>
+                    <span className={`${genderColorClass} text-[32px] font-bold leading-tight text-center`}>{word}</span>
                     <span className={`${genderColorClass} text-[14px] text-center`}>({genderString})</span>
                 </div>
 
@@ -262,10 +262,10 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
 
                 <div className="flex flex-col items-center gap-1">
                     <span className="text-[14px]">is:</span>
-                    <div className="flex items-center w-full gap-2">
-                        {casePreposition && <span className="text-[16px] whitespace-nowrap">{casePreposition}</span>}
+                    <div className="flex items-center w-full gap-3">
+                        {casePreposition && <span className="text-[20px] whitespace-nowrap">{casePreposition}</span>}
                         <input
-                            className="flex-1 px-3 py-2 border border-border text-[16px] leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2] focus:outline-none focus:border-primary transition-colors"
+                            className="flex-1 px-4 py-3 border border-border text-[20px] leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2] focus:outline-none focus:border-primary transition-colors"
                             type="text"
                             value={currentGuess}
                             disabled={isRevealed}
@@ -286,14 +286,14 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                         variant="primary"
                         onClick={handleCheck}
                         disabled={isRevealed}
-                        className="flex-[2] justify-center"
+                        className="flex-2 justify-center py-4 text-[16px]"
                     >
                         Check answer
                     </Button>
                     <Button
                         onClick={handleSkipClick}
                         ref={practiceNextWordButtonRef}
-                        className="flex-1 justify-center"
+                        className="flex-1 justify-center py-4 text-[16px]"
                     >
                         Next
                     </Button>
