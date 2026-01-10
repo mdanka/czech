@@ -130,6 +130,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                             variant="default"
                             onClick={handleSelectAllClick}
                             className="py-1 px-3 text-xs"
+                            disabled={selectedCases.size === SELECTABLE_CASE_NUMBERS.length}
                         >
                             Select all
                         </Button>
@@ -137,6 +138,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                             variant="default"
                             onClick={handleDeselectAllClick}
                             className="py-1 px-3 text-xs"
+                            disabled={selectedCases.size === 0}
                         >
                             Clear
                         </Button>
