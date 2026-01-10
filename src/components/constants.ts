@@ -1,19 +1,19 @@
 export const ALL_CASE_NAMES = [
     "", // to index cases from 1
-    "Nominative (1.) – singular",
-    "Genitive (2.) – singular",
-    "Dative (3.) – singular",
-    "Accusative (4.) – singular",
-    "Vocative (5.) – singular",
-    "Locative (6.) – singular",
-    "Instrumental (7.) – singular",
-    "Nominative (1.) – plural",
-    "Genitive (2.) – plural",
-    "Dative (3.) – plural",
-    "Accusative (4.) – plural",
-    "Vocative (5.) – plural",
-    "Locative (6.) – plural",
-    "Instrumental (7.) – plural",
+    "Nominative (1.) – singular •",
+    "Genitive (2.) – singular •",
+    "Dative (3.) – singular •",
+    "Accusative (4.) – singular •",
+    "Vocative (5.) – singular •",
+    "Locative (6.) – singular •",
+    "Instrumental (7.) – singular •",
+    "Nominative (1.) – plural ⋯",
+    "Genitive (2.) – plural ⋯",
+    "Dative (3.) – plural ⋯",
+    "Accusative (4.) – plural ⋯",
+    "Vocative (5.) – plural ⋯",
+    "Locative (6.) – plural ⋯",
+    "Instrumental (7.) – plural ⋯",
 ];
 
 // Setting the order, skipping nominative singular
