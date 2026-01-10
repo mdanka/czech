@@ -138,7 +138,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3 mb-8">
+                <div className="flex flex-wrap justify-center gap-3 mb-8">
                     {SELECTABLE_CASE_NUMBERS.map(renderCaseToggle)}
                 </div>
 
