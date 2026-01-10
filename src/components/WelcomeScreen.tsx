@@ -71,6 +71,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
             return <div key="placeholder" />;
         }
         const caseName = ALL_CASE_NAMES[caseNumber];
+        const [caseNamePart1, caseNamePart2] = caseName.split(" – ");
         const isSelected = selectedCases.has(caseNumber);
         return (
             <button
@@ -78,14 +79,15 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                 type="button"
                 onClick={getCaseClickHandler(caseNumber)}
                 className={`
-                    px-2 py-1.5 rounded-lg border transition-all duration-200 text-[11px] sm:text-sm font-medium cursor-pointer text-center flex items-center justify-center min-h-[44px] whitespace-nowrap
+                    px-2 py-1.5 rounded-lg border transition-all duration-200 font-medium cursor-pointer text-center flex items-center justify-center min-h-[44px] whitespace-nowrap
                     ${isSelected
                         ? "bg-primary text-white border-primary shadow-sm"
                         : "bg-white text-text-main border-border hover:border-primary/50"
                     }
                 `}
             >
-                {caseName}
+                {caseNamePart1}<br />
+                {caseNamePart2}
             </button>
         );
     };
