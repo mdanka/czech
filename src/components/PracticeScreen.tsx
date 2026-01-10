@@ -355,7 +355,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     onClick={toggleTooltip}
                 >
                     <span className="cursor-pointer underline decoration-dotted text-text-subtle text-[0.9em] hover:text-text-main transition-colors">
-                        {selectedCases.size} cases selected
+                        {selectedCases.size} case{selectedCases.size === 1 ? "" : "s"} selected
                     </span>
                     {renderTooltip()}
                 </div>
