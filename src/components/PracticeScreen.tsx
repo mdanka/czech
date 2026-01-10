@@ -269,7 +269,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     <div className="flex items-center w-full gap-3">
                         {casePreposition && <span className="text-[20px] whitespace-nowrap">{casePreposition}</span>}
                         <input
-                            className="flex-1 px-4 py-3 border border-border text-[20px] leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2] focus:outline-none focus:border-primary transition-colors"
+                            className="flex-1 px-4 py-2 border border-border text-[20px] leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2] focus:outline-none focus:border-primary transition-colors"
                             type="text"
                             value={currentGuess}
                             disabled={isRevealed}
@@ -285,7 +285,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     </div>
                 </div>
 
-                <div className="flex flex-row gap-2 mt-4 w-full">
+                <div className="flex flex-row gap-2 mt-2 w-full">
                     <Button
                         variant="primary"
                         onClick={handleCheck}
