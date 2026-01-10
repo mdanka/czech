@@ -43,7 +43,7 @@
     }
 
     body {
-        @apply flex flex-col items-stretch m-0 font-sans font-light text-[14px] normal-case tracking-normal leading-[1.28581];
+        @apply flex flex-col items-stretch m-4 font-sans font-light text-[14px] normal-case tracking-normal leading-[1.28581];
     }
 
     /* Headings */
