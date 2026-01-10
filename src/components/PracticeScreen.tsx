@@ -12,6 +12,7 @@ import {
     getSolutionsWordParts,
 } from "./utils";
 import { Button } from "./Button";
+import { GenderIcon } from "./GenderIcon";
 
 interface IPracticeScreenProps {
     database: IWordDatabase;
@@ -252,7 +253,10 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                 <div className="flex flex-col items-center">
                     <span className="text-[14px]">The word</span>
                     <span className={`${genderColorClass} text-[32px] font-bold leading-tight text-center`}>{word}</span>
-                    <span className={`${genderColorClass} text-[14px] text-center`}>({genderString})</span>
+                    <div className="flex items-center gap-1.5">
+                        <GenderIcon gender={gender} isAnimated={isAnimated} className="text-[14px]" />
+                        <span className={`${genderColorClass} text-[14px] text-center`}>{genderString}</span>
+                    </div>
                 </div>
 
                 <div className="flex flex-col items-center gap-1">
