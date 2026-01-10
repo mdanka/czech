@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { ALL_CASE_NAMES, SELECTABLE_CASE_NUMBERS } from "./constants";
 import { getCreateIssueUrl } from "./utils";
+import { Button } from "./Button";
 
 interface IWelcomeScreenProps {
     selectedCases: Set<number>;
@@ -57,16 +58,18 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
     const renderCaseCheckboxes = (caseNumber: number) => {
         const caseName = ALL_CASE_NAMES[caseNumber];
         return (
-            <div key={caseNumber}>
-                <input
-                    type="checkbox"
-                    checked={selectedCases.has(caseNumber)}
-                    value={caseNumber}
-                    onChange={getCaseClickHandler(caseNumber)}
-                    aria-label={caseName}
-                />{" "}
-                {caseName}
-                <br />
+            <div key={caseNumber} className="mb-1">
+                <label className="cursor-pointer select-none">
+                    <input
+                        type="checkbox"
+                        checked={selectedCases.has(caseNumber)}
+                        value={caseNumber}
+                        onChange={getCaseClickHandler(caseNumber)}
+                        aria-label={caseName}
+                        className="mr-2"
+                    />
+                    {caseName}
+                </label>
             </div>
         );
     };
@@ -74,13 +77,13 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
     return (
         <div className="welcome-screen">
             <h1>Czech Practice</h1>
-            <p className="md-running-text">
+            <p className="py-2 text-[16px] leading-relaxed">
                 Practise Czech grammar and declensions in this interactive app with{" "}
-                <span className="md-strong">
+                <span className="font-bold">
                     {databaseNumberOfWords === undefined ? "" : databaseNumberOfWords} words
                 </span>{" "}
                 and{" "}
-                <span className="md-strong">
+                <span className="font-bold">
                     {databaseNumberOfDeclensions === undefined ? "" : databaseNumberOfDeclensions} declensions
                 </span>
                 .
@@ -98,21 +101,23 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                 .
             </p>
             <h3>Choose cases to practise</h3>
-            <p className="md-running-text md-button-group">
-                <button className="md-button" onClick={handleSelectAllClick}>
+            <div className="flex gap-0 mb-4">
+                <Button onClick={handleSelectAllClick} className="rounded-r-none border-r-0">
                     Select all
-                </button>
-                <button className="md-button" onClick={handleDeselectAllClick}>
+                </Button>
+                <Button onClick={handleDeselectAllClick} className="rounded-l-none">
                     Deselect all
-                </button>
-            </p>
-            <div className="md-running-text">{SELECTABLE_CASE_NUMBERS.map(renderCaseCheckboxes)}</div>
+                </Button>
+            </div>
+            <div className="py-2 text-[16px] leading-relaxed mb-4">
+                {SELECTABLE_CASE_NUMBERS.map(renderCaseCheckboxes)}
+            </div>
 
-            <p className="md-running-text" style={{ marginTop: "20px" }}>
-                <button className="md-button md-intent-primary" onClick={onStart} disabled={selectedCases.size === 0}>
+            <div className="mt-5">
+                <Button variant="primary" onClick={onStart} disabled={selectedCases.size === 0}>
                     Practise
-                </button>
-            </p>
+                </Button>
+            </div>
         </div>
     );
 };
