@@ -66,7 +66,10 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
         [selectedCases, setSelectedCases]
     );
 
-    const renderCaseToggle = (caseNumber: number) => {
+    const renderCaseToggle = (caseNumber: number | null) => {
+        if (caseNumber === null) {
+            return <div key="placeholder" />;
+        }
         const caseName = ALL_CASE_NAMES[caseNumber];
         const isSelected = selectedCases.has(caseNumber);
         return (
@@ -75,9 +78,9 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                 type="button"
                 onClick={getCaseClickHandler(caseNumber)}
                 className={`
-                    px-4 py-2 rounded-full border transition-all duration-200 text-sm font-medium cursor-pointer
+                    px-2 py-1.5 rounded-lg border transition-all duration-200 text-[11px] sm:text-sm font-medium cursor-pointer text-center flex items-center justify-center min-h-[44px] whitespace-nowrap
                     ${isSelected
-                        ? "bg-primary text-white border-primary shadow-md transform scale-105"
+                        ? "bg-primary text-white border-primary shadow-sm"
                         : "bg-white text-text-main border-border hover:border-primary/50"
                     }
                 `}
@@ -138,7 +141,8 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-3 mb-8">
+                <div className="grid grid-cols-2 gap-2 mb-8">
+                    {renderCaseToggle(null) /* placeholder instead of nominative singular */}
                     {SELECTABLE_CASE_NUMBERS.map(renderCaseToggle)}
                 </div>
 
