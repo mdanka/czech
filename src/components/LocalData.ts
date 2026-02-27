@@ -54,11 +54,11 @@ export class LocalData {
         return this.localDataPromise;
     };
 
-    public setSelectedCases = async (selectedCases: Set<number>) => {
+    public setSelectedForms = async (selectedForms: Set<number>) => {
         const localData = await this.localDataPromise;
         const newLocalData = {
             ...localData,
-            settings: { ...localData.settings, selectedCases: Array.from(selectedCases.values()) },
+            settings: { ...localData.settings, selectedCases: Array.from(selectedForms.values()) },
         };
         this.localDataPromise = Promise.resolve(newLocalData);
         return this.saveLocalData();

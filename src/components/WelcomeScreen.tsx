@@ -1,22 +1,22 @@
 import React, { useCallback } from "react";
-import { ALL_CASE_NAMES, SELECTABLE_CASE_NUMBERS } from "./constants";
+import { ALL_FORM_NAMES, SELECTABLE_FORM_INDICES } from "./constants";
 import { getCreateIssueUrl } from "./utils";
 import { Button } from "./Button";
 
 interface IWelcomeScreenProps {
-    selectedCases: Set<number>;
-    setSelectedCases: (cases: Set<number>) => void;
+    selectedForms: Set<number>;
+    setSelectedForms: (forms: Set<number>) => void;
     onStart: () => void;
     databaseNumberOfWords: number | undefined;
-    databaseNumberOfDeclensions: number | undefined;
+    databaseNumberOfForms: number | undefined;
 }
 
 export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
-    selectedCases,
-    setSelectedCases,
+    selectedForms,
+    setSelectedForms,
     onStart,
     databaseNumberOfWords,
-    databaseNumberOfDeclensions,
+    databaseNumberOfForms,
 }) => {
     const renderFooter = () => {
         const question = "Do you have feedback?";
@@ -46,38 +46,38 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
     };
 
     const handleSelectAllClick = useCallback(() => {
-        setSelectedCases(new Set(SELECTABLE_CASE_NUMBERS.slice()));
-    }, [setSelectedCases]);
+        setSelectedForms(new Set(SELECTABLE_FORM_INDICES.slice()));
+    }, [setSelectedForms]);
 
     const handleDeselectAllClick = useCallback(() => {
-        setSelectedCases(new Set());
-    }, [setSelectedCases]);
+        setSelectedForms(new Set());
+    }, [setSelectedForms]);
 
-    const getCaseClickHandler = useCallback(
-        (caseNumber: number) => () => {
-            const newSelectedCases = new Set(selectedCases);
-            if (newSelectedCases.has(caseNumber)) {
-                newSelectedCases.delete(caseNumber);
+    const getFormClickHandler = useCallback(
+        (formIndex: number) => () => {
+            const newSelectedForms = new Set(selectedForms);
+            if (newSelectedForms.has(formIndex)) {
+                newSelectedForms.delete(formIndex);
             } else {
-                newSelectedCases.add(caseNumber);
+                newSelectedForms.add(formIndex);
             }
-            setSelectedCases(newSelectedCases);
+            setSelectedForms(newSelectedForms);
         },
-        [selectedCases, setSelectedCases]
+        [selectedForms, setSelectedForms]
     );
 
-    const renderCaseToggle = (caseNumber: number | null) => {
-        if (caseNumber === null) {
+    const renderFormToggle = (formIndex: number | null) => {
+        if (formIndex === null) {
             return <div key="placeholder" />;
         }
-        const caseName = ALL_CASE_NAMES[caseNumber];
-        const [caseNamePart1, caseNamePart2] = caseName.split(" – ");
-        const isSelected = selectedCases.has(caseNumber);
+        const formName = ALL_FORM_NAMES[formIndex];
+        const [formNamePart1, formNamePart2] = formName.split(" – ");
+        const isSelected = selectedForms.has(formIndex);
         return (
             <button
-                key={caseNumber}
+                key={formIndex}
                 type="button"
-                onClick={getCaseClickHandler(caseNumber)}
+                onClick={getFormClickHandler(formIndex)}
                 className={`
                     px-2 py-1.5 rounded-lg border transition-all duration-200 font-medium cursor-pointer text-center flex items-center justify-center min-h-[44px] whitespace-nowrap
                     ${isSelected
@@ -86,8 +86,8 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                     }
                 `}
             >
-                {caseNamePart1}<br />
-                {caseNamePart2}
+                {formNamePart1}<br />
+                {formNamePart2}
             </button>
         );
     };
@@ -99,7 +99,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                     Czech Practice
                 </h1>
                 <p className="text-lg text-text-subtle leading-relaxed">
-                    Master Czech grammar and declensions through focused practice.
+                    Master Czech noun forms through focused practice.
                 </p>
             </header>
 
@@ -114,23 +114,23 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-border/50 shadow-sm text-center">
                     <div className="text-2xl font-bold text-primary">
-                        {databaseNumberOfDeclensions === undefined ? "--" : databaseNumberOfDeclensions.toLocaleString()}
+                        {databaseNumberOfForms === undefined ? "--" : databaseNumberOfForms.toLocaleString()}
                     </div>
                     <div className="text-xs uppercase tracking-wider text-text-subtle font-semibold mt-1">
-                        Declensions
+                        Forms
                     </div>
                 </div>
             </section>
 
             <section className="mb-10">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="m-0! text-xl">Cases to practise</h3>
+                    <h3 className="m-0! text-xl">Forms to practise</h3>
                     <div className="flex gap-2">
                         <Button
                             variant="default"
                             onClick={handleSelectAllClick}
                             className="py-1 px-3 text-xs"
-                            disabled={selectedCases.size === SELECTABLE_CASE_NUMBERS.length}
+                            disabled={selectedForms.size === SELECTABLE_FORM_INDICES.length}
                         >
                             Select all
                         </Button>
@@ -138,7 +138,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                             variant="default"
                             onClick={handleDeselectAllClick}
                             className="py-1 px-3 text-xs"
-                            disabled={selectedCases.size === 0}
+                            disabled={selectedForms.size === 0}
                         >
                             Clear
                         </Button>
@@ -146,15 +146,15 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-8">
-                    {renderCaseToggle(null) /* placeholder instead of nominative singular */}
-                    {SELECTABLE_CASE_NUMBERS.map(renderCaseToggle)}
+                    {renderFormToggle(null) /* placeholder instead of nominative singular */}
+                    {SELECTABLE_FORM_INDICES.map(renderFormToggle)}
                 </div>
 
                 <div className="flex justify-center">
                     <Button
                         variant="primary"
                         onClick={onStart}
-                        disabled={selectedCases.size === 0}
+                        disabled={selectedForms.size === 0}
                         className="px-10 py-4 text-lg rounded-2xl shadow-lg transition-transform hover:scale-105"
                     >
                         Start Practising

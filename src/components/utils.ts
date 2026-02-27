@@ -2,7 +2,7 @@ import { ICase, IGender, ISolutionWordParts, IWordInformation } from "./types";
 
 export const SUM_REDUCER = (accumulator: number, currentValue: number) => accumulator + currentValue;
 
-export const generateGenderString = (gender: IGender | null, isAnimated: boolean): string => {
+export const generateGenderString = (gender: IGender | null, isAnimate: boolean): string => {
     if (gender == null) {
         return "";
     }
@@ -12,7 +12,7 @@ export const generateGenderString = (gender: IGender | null, isAnimated: boolean
     if (gender === "n") {
         return "Neuter";
     }
-    if (isAnimated) {
+    if (isAnimate) {
         return "Masculine - animate";
     }
     return "Masculine - inanimate";
