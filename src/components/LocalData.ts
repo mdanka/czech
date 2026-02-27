@@ -12,7 +12,9 @@ interface CzechDb extends DBSchema {
 export interface ILocalDataV1 {
     scores: IScores;
     settings: {
-        selectedCases: number[];
+        selectedForms: number[];
+        /** @deprecated Use `selectedForms`. Kept for reading old persisted data. */
+        selectedCases?: number[];
     };
 }
 
@@ -30,7 +32,7 @@ export class LocalData {
             skipped: 0,
         },
         settings: {
-            selectedCases: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            selectedForms: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
         },
     };
 
@@ -58,7 +60,7 @@ export class LocalData {
         const localData = await this.localDataPromise;
         const newLocalData = {
             ...localData,
-            settings: { ...localData.settings, selectedCases: Array.from(selectedForms.values()) },
+            settings: { selectedForms: Array.from(selectedForms.values()) },
         };
         this.localDataPromise = Promise.resolve(newLocalData);
         return this.saveLocalData();
@@ -84,6 +86,17 @@ export class LocalData {
         return db.put<typeof OBJECT_STORE_NAME>(OBJECT_STORE_NAME, localData, LocalData.KEY);
     };
 
+    private static migrateLocalData(localData: ILocalDataV1): ILocalDataV1 {
+        const { settings } = localData;
+        if (settings.selectedForms == null && settings.selectedCases != null) {
+            return {
+                ...localData,
+                settings: { selectedForms: settings.selectedCases },
+            };
+        }
+        return localData;
+    }
+
     private loadLocalData = async (): Promise<ILocalDataV1> => {
         this.dbPromise = openDB<CzechDb>(LocalData.DB_NAME, LocalData.CURRENT_VERSION, {
             upgrade: db => {
@@ -92,6 +105,9 @@ export class LocalData {
         });
         const db = await this.dbPromise;
         const localData = await db.get<typeof OBJECT_STORE_NAME>(OBJECT_STORE_NAME, LocalData.KEY);
-        return localData == null ? LocalData.DEFAULT_LOCAL_DATA : localData;
+        if (localData == null) {
+            return LocalData.DEFAULT_LOCAL_DATA;
+        }
+        return LocalData.migrateLocalData(localData);
     };
 }

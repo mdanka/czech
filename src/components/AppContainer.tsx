@@ -7,7 +7,7 @@ import { PracticeScreen } from "./PracticeScreen";
 
 export const AppContainer: React.FC = () => {
     const [view, setView] = useState<"welcome" | "practice">("welcome");
-    const [selectedForms, setSelectedFormsState] = useState<Set<number>>(new Set(LocalData.DEFAULT_LOCAL_DATA.settings.selectedCases));
+    const [selectedForms, setSelectedFormsState] = useState<Set<number>>(new Set(LocalData.DEFAULT_LOCAL_DATA.settings.selectedForms));
     const [scores, setScoresState] = useState<IScores>(LocalData.DEFAULT_LOCAL_DATA.scores);
     const [database, setDatabase] = useState<IWordDatabase | undefined>(undefined);
     const [databaseNumberOfWords, setDatabaseNumberOfWords] = useState<number | undefined>(undefined);
@@ -28,7 +28,7 @@ export const AppContainer: React.FC = () => {
     const loadLocalData = useCallback(async () => {
         const localData = await localDataManager.getLocalData();
         const { settings, scores: loadedScores } = localData;
-        setSelectedFormsState(new Set(settings.selectedCases));
+        setSelectedFormsState(new Set(settings.selectedForms));
         setScoresState(loadedScores);
     }, [localDataManager]);
 
