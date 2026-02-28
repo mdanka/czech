@@ -60,7 +60,7 @@ export class LocalData {
         const localData = await this.localDataPromise;
         const newLocalData = {
             ...localData,
-            settings: { selectedForms: Array.from(selectedForms.values()) },
+            settings: { ...localData.settings, selectedForms: Array.from(selectedForms.values()) },
         };
         this.localDataPromise = Promise.resolve(newLocalData);
         return this.saveLocalData();
@@ -105,9 +105,6 @@ export class LocalData {
         });
         const db = await this.dbPromise;
         const localData = await db.get<typeof OBJECT_STORE_NAME>(OBJECT_STORE_NAME, LocalData.KEY);
-        if (localData == null) {
-            return LocalData.DEFAULT_LOCAL_DATA;
-        }
-        return LocalData.migrateLocalData(localData);
+        return localData == null ? LocalData.DEFAULT_LOCAL_DATA : LocalData.migrateLocalData(localData);
     };
 }

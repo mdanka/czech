@@ -99,7 +99,7 @@ export const WelcomeScreen: React.FC<IWelcomeScreenProps> = ({
                     Czech Practice
                 </h1>
                 <p className="text-lg text-text-subtle leading-relaxed">
-                    Master Czech noun forms through focused practice.
+                    Master Czech word forms of all declensions through focused practice.
                 </p>
             </header>
 
