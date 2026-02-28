@@ -5,11 +5,11 @@ import { IGender } from "./types";
 
 interface IGenderIconProps {
     gender: IGender | null;
-    isAnimated: boolean;
+    isAnimate: boolean;
     className?: string;
 }
 
-export const GenderIcon: React.FC<IGenderIconProps> = ({ gender, isAnimated, className }) => {
+export const GenderIcon: React.FC<IGenderIconProps> = ({ gender, isAnimate, className }) => {
     let icon;
     let colorClass;
     switch (gender) {
@@ -20,7 +20,7 @@ export const GenderIcon: React.FC<IGenderIconProps> = ({ gender, isAnimated, cla
             colorClass = "text-feminine";
             break;
         case "m":
-            icon = isAnimated ? faUser : faMars;
+            icon = isAnimate ? faUser : faMars;
             colorClass = "text-masculine";
             break;
         case "n":

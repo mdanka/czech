@@ -1,5 +1,5 @@
-export const ALL_CASE_NAMES = [
-    "", // to index cases from 1
+export const ALL_FORM_NAMES = [
+    "", // to index forms from 1
     "Nominative (1.) – singular •",
     "Genitive (2.) – singular •",
     "Dative (3.) – singular •",
@@ -17,9 +17,9 @@ export const ALL_CASE_NAMES = [
 ];
 
 // Setting the order, skipping nominative singular
-export const SELECTABLE_CASE_NUMBERS = [8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14];
+export const SELECTABLE_FORM_INDICES = [8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14];
 
-export const CASE_PREPOSITIONS = [
+export const FORM_CUE_WORDS = [
     "",
     "to je",
     "bez",
