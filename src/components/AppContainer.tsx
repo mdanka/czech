@@ -7,11 +7,11 @@ import { PracticeScreen } from "./PracticeScreen";
 
 export const AppContainer: React.FC = () => {
     const [view, setView] = useState<"welcome" | "practice">("welcome");
-    const [selectedCases, setSelectedCasesState] = useState<Set<number>>(new Set(LocalData.DEFAULT_LOCAL_DATA.settings.selectedCases));
+    const [selectedForms, setSelectedFormsState] = useState<Set<number>>(new Set(LocalData.DEFAULT_LOCAL_DATA.settings.selectedForms));
     const [scores, setScoresState] = useState<IScores>(LocalData.DEFAULT_LOCAL_DATA.scores);
     const [database, setDatabase] = useState<IWordDatabase | undefined>(undefined);
     const [databaseNumberOfWords, setDatabaseNumberOfWords] = useState<number | undefined>(undefined);
-    const [databaseNumberOfDeclensions, setDatabaseNumberOfDeclensions] = useState<number | undefined>(undefined);
+    const [databaseNumberOfForms, setDatabaseNumberOfForms] = useState<number | undefined>(undefined);
 
     const localDataManager = useRef(new LocalData()).current;
 
@@ -20,15 +20,15 @@ export const AppContainer: React.FC = () => {
         await localDataManager.setScores(newScores);
     }, [localDataManager]);
 
-    const setSelectedCases = useCallback((newSelectedCases: Set<number>) => {
-        setSelectedCasesState(newSelectedCases);
-        void localDataManager.setSelectedCases(newSelectedCases);
+    const setSelectedForms = useCallback((newSelectedForms: Set<number>) => {
+        setSelectedFormsState(newSelectedForms);
+        void localDataManager.setSelectedForms(newSelectedForms);
     }, [localDataManager]);
 
     const loadLocalData = useCallback(async () => {
         const localData = await localDataManager.getLocalData();
         const { settings, scores: loadedScores } = localData;
-        setSelectedCasesState(new Set(settings.selectedCases));
+        setSelectedFormsState(new Set(settings.selectedForms));
         setScoresState(loadedScores);
     }, [localDataManager]);
 
@@ -38,7 +38,7 @@ export const AppContainer: React.FC = () => {
         const db = dbModule.default as IWordDatabase;
 
         const numWords = Object.keys(db).length;
-        const numDeclensions = Object.keys(db)
+        const numForms = Object.keys(db)
             .map(word => {
                 const wordInfo = db[word];
                 if (wordInfo == null) {
@@ -61,7 +61,7 @@ export const AppContainer: React.FC = () => {
 
         setDatabase(db);
         setDatabaseNumberOfWords(numWords);
-        setDatabaseNumberOfDeclensions(numDeclensions);
+        setDatabaseNumberOfForms(numForms);
     }, []);
 
     useEffect(() => {
@@ -104,17 +104,17 @@ export const AppContainer: React.FC = () => {
         <div className="app">
             {view === "welcome" && (
                 <WelcomeScreen
-                    selectedCases={selectedCases}
-                    setSelectedCases={setSelectedCases}
+                    selectedForms={selectedForms}
+                    setSelectedForms={setSelectedForms}
                     onStart={handleStart}
                     databaseNumberOfWords={databaseNumberOfWords}
-                    databaseNumberOfDeclensions={databaseNumberOfDeclensions}
+                    databaseNumberOfForms={databaseNumberOfForms}
                 />
             )}
             {view === "practice" && database && (
                 <PracticeScreen
                     database={database}
-                    selectedCases={selectedCases}
+                    selectedForms={selectedForms}
                     onBack={handleBack}
                     scores={scores}
                     increaseScore={increaseScore}

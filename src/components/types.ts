@@ -7,7 +7,7 @@ export type IGender = "m" | "f" | "n";
 
 export interface IWordInformation {
     gender: IGender | null;
-    isAnimated: boolean;
+    isAnimate: boolean;
     nominative: ICase | null;
     genitive: ICase | null;
     dative: ICase | null;
@@ -27,6 +27,6 @@ export type IWordDatabase = { [word: string]: IWordInformation | null | undefine
 export interface ICurrentPuzzle {
     word: string;
     info: IWordInformation;
-    caseNumber: number;
+    formIndex: number;
     solutions: string[];
 }

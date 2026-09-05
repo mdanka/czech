@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { IWordDatabase, ICurrentPuzzle, ISolutionWordParts } from "./types";
-import { ALL_CASE_NAMES, CASE_PREPOSITIONS, SELECTABLE_CASE_NUMBERS } from "./constants";
+import { ALL_FORM_NAMES, FORM_CUE_WORDS, SELECTABLE_FORM_INDICES } from "./constants";
 import { IScores } from "./LocalData";
 import {
     selectRandom,
@@ -16,7 +16,7 @@ import { GenderIcon } from "./GenderIcon";
 
 interface IPracticeScreenProps {
     database: IWordDatabase;
-    selectedCases: Set<number>;
+    selectedForms: Set<number>;
     onBack: () => void;
     scores: IScores;
     increaseScore: (type: keyof IScores) => Promise<void>;
@@ -25,7 +25,7 @@ interface IPracticeScreenProps {
 
 export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
     database,
-    selectedCases,
+    selectedForms,
     onBack,
     scores,
     increaseScore,
@@ -65,22 +65,22 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         if (info == null) {
             return;
         }
-        const caseNumber = selectRandom(Array.from(selectedCases));
-        if (caseNumber === undefined) {
+        const formIndex = selectRandom(Array.from(selectedForms));
+        if (formIndex === undefined) {
             return;
         }
         const cases = wordInfoToCaseList(info);
-        const solutions = cases[caseNumber];
+        const solutions = cases[formIndex];
         if (solutions.length === 0) {
             return;
         }
         return {
             word,
             info,
-            caseNumber,
+            formIndex,
             solutions,
         };
-    }, [database, selectedCases]);
+    }, [database, selectedForms]);
 
     const handleNewWordClick = useCallback(async (isSkipped: boolean) => {
         let word: ICurrentPuzzle | undefined;
@@ -187,15 +187,15 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         if (currentPuzzle === undefined) {
             return null;
         }
-        const { word, info, solutions, caseNumber } = currentPuzzle;
-        const caseName = ALL_CASE_NAMES[caseNumber];
-        const { gender, isAnimated } = info;
+        const { word, info, solutions, formIndex } = currentPuzzle;
+        const formName = ALL_FORM_NAMES[formIndex];
+        const { gender, isAnimate } = info;
         const wiktionaryUrl = getWiktionaryUrl(word);
-        const genderString = generateGenderString(gender, isAnimated);
+        const genderString = generateGenderString(gender, isAnimate);
         const question = "Do you disagree with this answer?";
-        const callToAction = "Click here to report an incorrect declension.";
+        const callToAction = "Click here to report an incorrect form.";
         const issueTitle = `Wrong solution for "${word}"`;
-        const issueBody = `The word [${word}](${wiktionaryUrl}) \`(${genderString})\` in the case \`${caseName}\` is specified as \`${solutions.join(", ")}\`, but I think it is incorrect because... <fill in why>`;
+        const issueBody = `The word [${word}](${wiktionaryUrl}) \`(${genderString})\` in the form \`${formName}\` is specified as \`${solutions.join(", ")}\`, but I think it is incorrect because... <fill in why>`;
 
         const issueUrl = getCreateIssueUrl(issueTitle, issueBody, "word");
         return (
@@ -232,21 +232,21 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         if (currentPuzzle == null) {
             return null;
         }
-        const { word, solutions, caseNumber, info } = currentPuzzle;
-        const { gender, isAnimated } = info;
-        const genderString = generateGenderString(gender, isAnimated);
+        const { word, solutions, formIndex, info } = currentPuzzle;
+        const { gender, isAnimate } = info;
+        const genderString = generateGenderString(gender, isAnimate);
         const isCorrect = isGuessCorrect();
 
         const genderColorClass = gender === "f" ? "text-feminine" : gender === "m" ? "text-masculine" : "text-neutrum";
 
         const resultElement = isCorrect ? (
-            <div className="text-[20px] font-bold text-success">✓ Correct!</div>
+            <div className="text-[20px] font-bold text-success">&#10003; Correct!</div>
         ) : (
-            <div className="text-[20px] font-bold text-danger">✗ Incorrect</div>
+            <div className="text-[20px] font-bold text-danger">&#10007; Incorrect</div>
         );
         const solutionsPartsList = getSolutionsWordParts(word, solutions);
-        const casePreposition = CASE_PREPOSITIONS[caseNumber];
-        const caseName = ALL_CASE_NAMES[caseNumber];
+        const cueWord = FORM_CUE_WORDS[formIndex];
+        const formName = ALL_FORM_NAMES[formIndex];
 
         return (
             <div className="flex flex-col gap-4 py-4 w-full">
@@ -254,20 +254,20 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     <span className="text-[14px]">The word</span>
                     <span className={`${genderColorClass} text-[32px] font-bold leading-tight text-center`}>{word}</span>
                     <div className="flex items-center gap-1.5">
-                        <GenderIcon gender={gender} isAnimated={isAnimated} className="text-[14px]" />
+                        <GenderIcon gender={gender} isAnimate={isAnimate} className="text-[14px]" />
                         <span className={`${genderColorClass} text-[14px] text-center`}>{genderString}</span>
                     </div>
                 </div>
 
                 <div className="flex flex-col items-center gap-1">
-                    <span className="text-[14px]">in the case</span>
-                    <span className="text-[20px] font-semibold text-center">{caseName}</span>
+                    <span className="text-[14px]">in the form</span>
+                    <span className="text-[20px] font-semibold text-center">{formName}</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-1">
                     <span className="text-[14px]">is:</span>
                     <div className="flex items-center w-full gap-3">
-                        {casePreposition && <span className="text-[20px] whitespace-nowrap">{casePreposition}</span>}
+                        {cueWord && <span className="text-[20px] whitespace-nowrap">{cueWord}</span>}
                         <input
                             className="flex-1 px-4 py-2 border border-border text-[20px] leading-normal disabled:opacity-95 disabled:bg-[#f2f2f2] focus:outline-none focus:border-primary transition-colors"
                             type="text"
@@ -310,7 +310,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                             The correct answer was
                         </div>
                         <div className="text-[20px] text-center text-text-subtle">
-                            &apos;{casePreposition} {solutionsPartsList.map(renderSolutionsParts)}&apos;
+                            &apos;{cueWord} {solutionsPartsList.map(renderSolutionsParts)}&apos;
                         </div>
                     </div>
                 )}
@@ -327,15 +327,15 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
         if (!isTooltipVisible) {
             return null;
         }
-        const sortedSelectedCases = Array.from(selectedCases).sort((a, b) => {
-            return SELECTABLE_CASE_NUMBERS.indexOf(a) - SELECTABLE_CASE_NUMBERS.indexOf(b);
+        const sortedSelectedForms = Array.from(selectedForms).sort((a, b) => {
+            return SELECTABLE_FORM_INDICES.indexOf(a) - SELECTABLE_FORM_INDICES.indexOf(b);
         });
         return (
             <div className="absolute top-full left-0 bg-[rgba(0,0,0,0.9)] text-white p-[10px] rounded-[4px] z-[100] whitespace-nowrap mt-[5px] shadow-[0_2px_10px_rgba(0,0,0,0.5)] text-[0.85em] max-h-[300px] overflow-y-auto border border-[rgba(255,255,255,0.1)]">
                 <ul style={{ margin: 0, padding: 0, listStyleType: "none", textAlign: "left" }}>
-                    {sortedSelectedCases.map(caseNumber => (
-                        <li key={caseNumber} style={{ marginBottom: "4px" }}>
-                            {ALL_CASE_NAMES[caseNumber]}
+                    {sortedSelectedForms.map(formIndex => (
+                        <li key={formIndex} style={{ marginBottom: "4px" }}>
+                            {ALL_FORM_NAMES[formIndex]}
                         </li>
                     ))}
                 </ul>
@@ -355,7 +355,7 @@ export const PracticeScreen: React.FC<IPracticeScreenProps> = ({
                     onClick={toggleTooltip}
                 >
                     <span className="cursor-pointer underline decoration-dotted text-text-subtle text-[0.9em] hover:text-text-main transition-colors">
-                        {selectedCases.size} case{selectedCases.size === 1 ? "" : "s"} selected
+                        {selectedForms.size} form{selectedForms.size === 1 ? "" : "s"} selected
                     </span>
                     {renderTooltip()}
                 </div>
